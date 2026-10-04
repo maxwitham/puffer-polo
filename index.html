@@ -263,6 +263,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
       <div><h2>Dash</h2><p>A dash hits the ball far harder and stuns the other octopus. You hold three, shown as dots under you, and each takes a moment to refill.</p></div>
       <div><h2>Bubbles</h2><p>Pop one for a power-up. The plus makes you giant, the chevrons give endless dashes, the bolt zaps your rival.</p></div>
       <div><h2>Chests and skins</h2><p>Beat an opponent to win a chest. Harder opponents give rarer chests, and each has its own pool and ball. Chests hold skins; a duplicate gives nothing.</p></div>
+      <div><h2>Skin bonuses</h2><p>Skins are more than a look. Each one adds to your speed, strength, dash refill or boost time, and rarer skins add more. The Skins screen shows what each gives.</p></div>
       <div><h2>Online</h2><p>Choose Online and press Create game, then send your friend the four-letter code. They choose Online, type it in and press Join.</p></div>
       <div><h2>More</h2><p><a href="guide.html">The full guide</a> has tips, every opponent, and the chest odds.</p></div>
     </div>
@@ -315,26 +316,30 @@ const RAR=['Common','Rare','Epic','Legendary','Mythic'];
 const RARCOL=['#cfdde2','#6cc4ff','#d29bff','#ffd75e','#ff8fc7'];
 /* A skin: body colour, tentacle colour, optional pattern (pat) with second colour (p2), optional hat.
    The order matters for online play (skins are sent by position), so add new skins at the end. */
+/* Stats are permanent bonuses that come with a skin, as multipliers (1 = no bonus):
+   spd swim speed · str how hard a dash hits the ball · rg how fast dashes refill · bt how long bubble power-ups last.
+   Rarer skins get more. The starter skin has none. */
+const STAT_NAMES={spd:'speed',str:'strength',rg:'dash refill',bt:'boost time'};
 const SKINS=[
-  {id:'coral',name:'Coral',rar:0,col:CORAL,dark:CORAL_D,base:true},
-  {id:'lime',name:'Lime',rar:0,col:'#9be15d',dark:'#5fa82e'},
-  {id:'sky',name:'Sky',rar:0,col:'#6ec6ff',dark:'#3789c9'},
-  {id:'sunny',name:'Sunny',rar:0,col:'#ffd166',dark:'#d99a1c'},
-  {id:'gum',name:'Bubblegum',rar:0,col:'#ff9ecf',dark:'#d0609c'},
-  {id:'mint',name:'Mint',rar:0,col:'#7fe3c4',dark:'#3ea888'},
-  {id:'slate',name:'Slate',rar:0,col:'#9fb0c3',dark:'#62748a'},
-  {id:'tiger',name:'Tiger',rar:1,col:'#ff9f43',dark:'#b85c00',pat:'stripes',p2:'#7a3b00'},
-  {id:'dotty',name:'Dotty',rar:1,col:'#ff7aa8',dark:'#c44a78',pat:'spots',p2:'#fff4f8'},
-  {id:'dipped',name:'Dipped',rar:1,col:'#3fc1c9',dark:'#23878e',pat:'dip',p2:'#fff1c9'},
-  {id:'party',name:'Party',rar:1,col:'#9be15d',dark:'#5fa82e',hat:'party'},
-  {id:'cool',name:'Cool',rar:1,col:'#6ec6ff',dark:'#3789c9',hat:'shades'},
-  {id:'dapper',name:'Dapper',rar:1,col:'#c9a7ff',dark:'#8d6bd1',hat:'tophat'},
-  {id:'lantern',name:'Lantern',rar:2,col:'#7ff9ff',dark:'#2fb8c4',pat:'glow'},
-  {id:'ghost',name:'Ghost',rar:2,col:'#f2fbff',dark:'#c5dde6',pat:'ghost'},
-  {id:'magma',name:'Magma',rar:2,col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true},
-  {id:'golden',name:'Golden',rar:3,col:'#ffcf3f',dark:'#c98f12',pat:'gold'},
-  {id:'stardust',name:'Stardust',rar:3,col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true},
-  {id:'royal',name:'Rainbow Royal',rar:4,col:'#ff5fa8',dark:'#c2337a',pat:'rainbow',hat:'crown'}
+  {id:'coral',name:'Coral',rar:0,col:CORAL,dark:CORAL_D,base:true,st:{}},
+  {id:'lime',name:'Lime',rar:0,col:'#9be15d',dark:'#5fa82e',st:{spd:1.04}},
+  {id:'sky',name:'Sky',rar:0,col:'#6ec6ff',dark:'#3789c9',st:{rg:1.08}},
+  {id:'sunny',name:'Sunny',rar:0,col:'#ffd166',dark:'#d99a1c',st:{bt:1.15}},
+  {id:'gum',name:'Bubblegum',rar:0,col:'#ff9ecf',dark:'#d0609c',st:{str:1.05}},
+  {id:'mint',name:'Mint',rar:0,col:'#7fe3c4',dark:'#3ea888',st:{spd:1.02,rg:1.04}},
+  {id:'slate',name:'Slate',rar:0,col:'#9fb0c3',dark:'#62748a',st:{str:1.03,bt:1.08}},
+  {id:'tiger',name:'Tiger',rar:1,col:'#ff9f43',dark:'#b85c00',pat:'stripes',p2:'#7a3b00',st:{spd:1.08}},
+  {id:'dotty',name:'Dotty',rar:1,col:'#ff7aa8',dark:'#c44a78',pat:'spots',p2:'#fff4f8',st:{str:1.09}},
+  {id:'dipped',name:'Dipped',rar:1,col:'#3fc1c9',dark:'#23878e',pat:'dip',p2:'#fff1c9',st:{rg:1.15}},
+  {id:'party',name:'Party',rar:1,col:'#9be15d',dark:'#5fa82e',hat:'party',st:{bt:1.3}},
+  {id:'cool',name:'Cool',rar:1,col:'#6ec6ff',dark:'#3789c9',hat:'shades',st:{spd:1.04,str:1.05}},
+  {id:'dapper',name:'Dapper',rar:1,col:'#c9a7ff',dark:'#8d6bd1',hat:'tophat',st:{spd:1.04,rg:1.08}},
+  {id:'lantern',name:'Lantern',rar:2,col:'#7ff9ff',dark:'#2fb8c4',pat:'glow',st:{spd:1.08,rg:1.15}},
+  {id:'ghost',name:'Ghost',rar:2,col:'#f2fbff',dark:'#c5dde6',pat:'ghost',st:{spd:1.12,bt:1.2}},
+  {id:'magma',name:'Magma',rar:2,col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true,st:{str:1.15,rg:1.08}},
+  {id:'golden',name:'Golden',rar:3,col:'#ffcf3f',dark:'#c98f12',pat:'gold',st:{str:1.14,rg:1.12,bt:1.4}},
+  {id:'stardust',name:'Stardust',rar:3,col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true,st:{spd:1.12,str:1.08,rg:1.2}},
+  {id:'royal',name:'Rainbow Royal',rar:4,col:'#ff5fa8',dark:'#c2337a',pat:'rainbow',hat:'crown',st:{spd:1.16,str:1.18,rg:1.3,bt:1.5}}
 ];
 /* Chest odds are the percentage chance of each rarity: Common, Rare, Epic, Legendary, Mythic. Each row adds up to 100. */
 const CHESTS=[
@@ -364,11 +369,11 @@ const LADDER=[
   {name:'Bubbles',chest:0,map:0,ball:0,skin:{col:'#8fd3ff',dark:'#4f9fd6'},ai:{speed:.58,lead:.02,err:90,align:.95,cd:2.2,rush:false,pups:false}},
   {name:'Shelly',chest:0,map:0,ball:1,skin:{col:'#ffb3d1',dark:'#d0709c',hat:'party'},ai:{speed:.68,lead:.04,err:70,align:.94,cd:1.7,rush:false,pups:false}},
   {name:'Inky',chest:1,map:1,ball:0,skin:{col:'#5b6b8c',dark:'#36415a'},ai:{speed:.77,lead:.09,err:48,align:.92,cd:1.3,rush:false,pups:true}},
-  {name:'Riptide',chest:1,map:1,ball:2,skin:{col:'#ff9f43',dark:'#b85c00',pat:'stripes',p2:'#7a3b00'},ai:{speed:.86,lead:.14,err:30,align:.9,cd:.95,rush:true,pups:true}},
-  {name:'Brine',chest:2,map:2,ball:3,skin:{col:'#3fc1c9',dark:'#23878e',pat:'dip',p2:'#fff1c9',hat:'shades'},ai:{speed:.93,lead:.17,err:18,align:.88,cd:.72,rush:true,pups:true}},
-  {name:'Undertow',chest:2,map:2,ball:4,skin:{col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true},ai:{speed:1,lead:.2,err:8,align:.86,cd:.5,rush:true,pups:true}},
-  {name:'Maelstrom',chest:3,map:3,ball:2,skin:{col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true},ai:{speed:1.06,lead:.22,err:4,align:.85,cd:.4,rush:true,pups:true}},
-  {name:'The Kraken',chest:3,map:4,ball:4,skin:{col:'#8c1f3f',dark:'#4f0f22',pat:'magma',p2:'#ffd75e',lite:true,hat:'crown'},ai:{speed:1.12,lead:.24,err:0,align:.84,cd:.3,rush:true,pups:true}}
+  {name:'Riptide',chest:1,map:1,ball:2,skin:{st:{rg:1.1},col:'#ff9f43',dark:'#b85c00',pat:'stripes',p2:'#7a3b00'},ai:{speed:.86,lead:.14,err:30,align:.9,cd:.95,rush:true,pups:true}},
+  {name:'Brine',chest:2,map:2,ball:3,skin:{st:{str:1.08},col:'#3fc1c9',dark:'#23878e',pat:'dip',p2:'#fff1c9',hat:'shades'},ai:{speed:.93,lead:.17,err:18,align:.88,cd:.72,rush:true,pups:true}},
+  {name:'Undertow',chest:2,map:2,ball:4,skin:{st:{str:1.15},col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true},ai:{speed:1,lead:.2,err:8,align:.86,cd:.5,rush:true,pups:true}},
+  {name:'Maelstrom',chest:3,map:3,ball:2,skin:{st:{rg:1.2,str:1.08},col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true},ai:{speed:1.06,lead:.22,err:4,align:.85,cd:.4,rush:true,pups:true}},
+  {name:'The Kraken',chest:3,map:4,ball:4,skin:{st:{str:1.18,rg:1.25},col:'#8c1f3f',dark:'#4f0f22',pat:'magma',p2:'#ffd75e',lite:true,hat:'crown'},ai:{speed:1.12,lead:.24,err:0,align:.84,cd:.3,rush:true,pups:true}}
 ];
 const STATES=['play','countdown','goal','over'];
 /* Online play. Room codes map to PeerJS ids with this prefix. Change the prefix if you fork the game. */
@@ -484,15 +489,18 @@ function fx(k,...a){
 }
 
 /* ---------- input ---------- */
+const latch={};                                         // keys pressed since the controls were last read, so a very quick tap is never missed
+const K=c=>keys[c]||latch[c];
+function clearLatch(){for(const c in latch)delete latch[c];}
 function humanInput(p){
-  const k=keys,solo=mode!==2;let x=0,y=0,d=false;
+  const solo=mode!==2;let x=0,y=0,d=false;
   if(p===0){
-    x=(k.KeyD?1:0)-(k.KeyA?1:0)+touch.x;y=(k.KeyS?1:0)-(k.KeyW?1:0)+touch.y;
-    d=!!(k.Space||k.ShiftLeft||k.KeyF||touch.dash);
-    if(solo){x+=(k.ArrowRight?1:0)-(k.ArrowLeft?1:0);y+=(k.ArrowDown?1:0)-(k.ArrowUp?1:0);d=d||!!(k.Enter||k.NumpadEnter||k.ShiftRight||k.Slash);}
+    x=(K('KeyD')?1:0)-(K('KeyA')?1:0)+touch.x;y=(K('KeyS')?1:0)-(K('KeyW')?1:0)+touch.y;
+    d=!!(K('Space')||K('ShiftLeft')||K('KeyF')||touch.dash);
+    if(solo){x+=(K('ArrowRight')?1:0)-(K('ArrowLeft')?1:0);y+=(K('ArrowDown')?1:0)-(K('ArrowUp')?1:0);d=d||!!(K('Enter')||K('NumpadEnter')||K('ShiftRight')||K('Slash'));}
   }else{
-    x=(k.ArrowRight?1:0)-(k.ArrowLeft?1:0);y=(k.ArrowDown?1:0)-(k.ArrowUp?1:0);
-    d=!!(k.Enter||k.NumpadEnter||k.Slash||k.ShiftRight);
+    x=(K('ArrowRight')?1:0)-(K('ArrowLeft')?1:0);y=(K('ArrowDown')?1:0)-(K('ArrowUp')?1:0);
+    d=!!(K('Enter')||K('NumpadEnter')||K('Slash')||K('ShiftRight'));
   }
   const m=Math.hypot(x,y);if(m>1){x/=m;y/=m;}
   return{x,y,d};
@@ -521,12 +529,13 @@ function aiInput(o,sk,dt){
   return inp;
 }
 function localInputs(dt){
-  return octos.map((o,i)=>{
+  const ins=octos.map((o,i)=>{
     const human=!demo&&(i===0||mode===2),sk=demo?SKILL[1]:mode===4?LADDER[run.opp].ai:SKILL[diff];
     o.scale=human?1:sk.speed;
     const inp=human?humanInput(i):aiInput(o,sk,dt);
     inp.dp=inp.d&&!o.dHeld;o.dHeld=inp.d;return inp;
   });
+  clearLatch();return ins;
 }
 
 /* ---------- physics ---------- */
@@ -556,12 +565,13 @@ function arena(o,e,loud){
   if(o.x>WR&&(o.y<G1||o.y>G2))o.x=WR-r;
   o.x=clamp(o.x,WL-GD+r*.5,WR+GD-r*.5);
 }
+const stat=(o,k)=>(o.skin&&o.skin.st&&o.skin.st[k])||1;   // a skin's bonus for one stat; 1 means none
 function stepOcto(o,inp,dp,h){
   o.stunT-=h;o.bigT-=h;o.turboT-=h;o.dashCd-=h;
   const rT=o.bigT>0?40:24;o.r+=(rT-o.r)*Math.min(1,h*10);
   const stunned=o.stunT>0,ix=stunned?0:inp.x,iy=stunned?0:inp.y;
-  const sp=o.scale*(o.turboT>0?1.3:1);
-  if(o.turboT>0)o.charges=3;else if(o.charges<3)o.charges=Math.min(3,o.charges+h/1.5);
+  const sp=o.scale*(o.turboT>0?1.3:1)*stat(o,'spd');
+  if(o.turboT>0)o.charges=3;else if(o.charges<3)o.charges=Math.min(3,o.charges+h/1.5*stat(o,'rg'));
   if(dp&&!stunned&&o.charges>=1&&o.dashCd<=0){
     let dx=ix,dy=iy;const m=Math.hypot(dx,dy);
     if(m<.2){dx=Math.cos(o.ang);dy=Math.sin(o.ang);}else{dx/=m;dy/=m;}
@@ -612,6 +622,7 @@ function octoBall(o){
     if(dashing&&!o.dashHit){
       const want=(o.bigT>0?1000:820)*BALL.hit,cur=ball.vx*nx+ball.vy*ny;
       if(cur<want){ball.vx+=(want-cur)*nx;ball.vy+=(want-cur)*ny;}
+      const str=stat(o,'str');if(str!==1){ball.vx*=str;ball.vy*=str;}   // strength: the whole shot is that much faster
       o.dashHit=true;ball.puff=1;hitStop=.05;
       fx('hit',o.team,ball.x-nx*ball.r,ball.y-ny*ball.r);
     }else if(j>170){ball.puff=Math.max(ball.puff,.35);fx('soft');}
@@ -624,11 +635,12 @@ function stepBall(h){
   const f=Math.exp(-BALL.drag*h);ball.vx*=f;ball.vy*=f;
   ball.x+=ball.vx*h;ball.y+=ball.vy*h;ball.spin+=ball.vx/ball.r*h;
   arena(ball,BALL.rest,true);
-  const sp=Math.hypot(ball.vx,ball.vy);if(sp>1250){ball.vx*=1250/sp;ball.vy*=1250/sp;}
+  const sp=Math.hypot(ball.vx,ball.vy);if(sp>1500){ball.vx*=1500/sp;ball.vy*=1500/sp;}
 }
 function applyPup(o,type){
   const other=octos[1-o.team];
-  if(type===0)o.bigT=7;else if(type===1)o.turboT=6;else other.stunT=1.6;
+  const bt=stat(o,'bt');                                // boost time stretches whatever the bubble gives
+  if(type===0)o.bigT=7*bt;else if(type===1)o.turboT=6*bt;else other.stunT=1.6*bt;
   fx('pup',type,o.team,o.x,o.y,other.x,other.y,bubble.x,bubble.y);
 }
 /* One step of the pool. inputs = [{x,y,dp},{x,y,dp}], dp meaning "dash pressed this step". */
@@ -893,7 +905,7 @@ function sendSnap(){
     ev:net.ev.map(e=>[e.i,e.k,e.a])});
 }
 function hostTick(){
-  const o=octos[0],raw=humanInput(0);
+  const o=octos[0],raw=humanInput(0);clearLatch();
   const hi={x:q2(raw.x),y:q2(raw.y),d:raw.d,dp:raw.d&&!o.dHeld};o.dHeld=raw.d;
   net.hi=hi;
   advance(TICK,[hi,takeGuestInput()]);
@@ -947,7 +959,7 @@ function applySnap(s){
   });
 }
 function guestTick(){
-  const raw=humanInput(0),dp=raw.d&&!net.dHeld;net.dHeld=raw.d;
+  const raw=humanInput(0),dp=raw.d&&!net.dHeld;net.dHeld=raw.d;clearLatch();
   const inp={x:q2(raw.x),y:q2(raw.y),d:raw.d,dp};
   net.seq++;net.buf.set(net.seq,inp);net.buf.delete(net.seq-40);
   const q=[];
@@ -1252,11 +1264,11 @@ const GAMEKEYS=new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','
 addEventListener('keydown',e=>{
   if(e.target&&e.target.tagName==='INPUT')return;
   if(e.code==='KeyP'||e.code==='Escape'){if(state==='paused')resume();else pause();return;}
-  keys[e.code]=true;
+  keys[e.code]=true;latch[e.code]=true;
   if(!demo&&state!=='over'&&state!=='paused'&&GAMEKEYS.has(e.code))e.preventDefault();
 });
 addEventListener('keyup',e=>{keys[e.code]=false;});
-addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;clearLatch();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 
 const stick=$('stick'),knob=$('knob');let stickOn=false;
@@ -1309,10 +1321,16 @@ function tileDraw(cvs,skin,owned){
   }
   withCtx(c,()=>drawOcto({team:0,x:23,y:19,vx:0,vy:0,r:12,dashT:0,stunT:0,turboT:0,charges:null,skin,ring:false,look:[0,0]}));
 }
+function statText(sk){                                   // "+8% speed, +5% strength"
+  const st=sk.st||{},parts=Object.keys(STAT_NAMES).filter(k=>st[k]).map(k=>'+'+Math.round((st[k]-1)*100)+'% '+STAT_NAMES[k]);
+  return parts.length?parts.join(', '):'No bonuses';
+}
 function skinInfo(sk,own){
   const p=$('skinInfo');p.textContent='';
   const b=document.createElement('strong');b.className='rar'+sk.rar;b.textContent=own?sk.name:'Locked';p.appendChild(b);
-  p.appendChild(document.createTextNode(' \u00b7 '+RAR[sk.rar]+(own?(save.skin===sk.id?' \u00b7 equipped':''):' \u00b7 found in chests')));
+  p.appendChild(document.createTextNode(', '+RAR[sk.rar]+(own?(save.skin===sk.id?', equipped':''):', found in chests')));
+  p.appendChild(document.createElement('br'));
+  p.appendChild(document.createTextNode(statText(sk)));
 }
 function buildSkins(){
   const g=$('skinGrid');g.textContent='';
@@ -1363,7 +1381,7 @@ function awardChest(){
 function revealChest(){
   const sk=chest.skin,p=$('chestMsg');p.textContent=chest.isNew?'New skin: ':'Duplicate: ';
   const b=document.createElement('strong');b.className='rar'+sk.rar;b.textContent=sk.name;p.appendChild(b);
-  p.appendChild(document.createTextNode(' \u00b7 '+RAR[sk.rar]+(chest.isNew?'':'. You already have it, so nothing new this time.')));
+  p.appendChild(document.createTextNode(', '+RAR[sk.rar]+(chest.isNew?'. '+statText(sk)+'.':'. You already have it, so nothing new this time.')));
   const more=run.opp<save.unlocked-1&&run.opp<LADDER.length-1;
   $('btnNextOpp').textContent=more?'Next: '+LADDER[run.opp+1].name:'Play again';$('btnNextOpp').hidden=false;
   $('btnEquip').hidden=!chest.isNew;$('btnEquip').disabled=false;$('btnEquip').textContent='Equip';
@@ -1451,7 +1469,7 @@ function readInvite(){
 readInvite();addEventListener('hashchange',readInvite);
 
 // small hook for testing in the browser console
-window.__pp=()=>({state,score:score.slice(),time,demo,mode,map:MAP.name,ballType:BALL.id,skins:octos.map(o=>o.skin?(o.skin.id||'opponent'):null),opp:run.opp,save:JSON.parse(JSON.stringify(save)),role:net.role,on:net.on,ping:net.ping||0,
+window.__pp=()=>({stats:octos.map(o=>({spd:stat(o,'spd'),str:stat(o,'str'),rg:stat(o,'rg'),bt:stat(o,'bt')})),state,score:score.slice(),time,demo,mode,map:MAP.name,ballType:BALL.id,skins:octos.map(o=>o.skin?(o.skin.id||'opponent'):null),opp:run.opp,save:JSON.parse(JSON.stringify(save)),role:net.role,on:net.on,ping:net.ping||0,
   ball:[ball.x,ball.y],octos:octos.map(o=>[o.x,o.y,o.charges]),code:net.code||null,corr:objs.map(o=>Math.round(Math.hypot(o.ex,o.ey)*10)/10)});
 
 let last=0;
