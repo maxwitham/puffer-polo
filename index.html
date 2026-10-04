@@ -121,9 +121,7 @@ button:disabled{opacity:.35;cursor:default}
 .stick{width:128px;height:128px;border-radius:50%;background:var(--panel-deep);border:2px solid rgba(234,252,255,.25);
   display:grid;place-items:center;touch-action:none}
 .knob{width:54px;height:54px;border-radius:50%;background:var(--coral);pointer-events:none}
-.pad .btns{display:flex;gap:10px}
-.pad button{width:96px;height:96px;font:400 1.2rem var(--display);background:var(--panel);touch-action:none}
-.pad button.ready{box-shadow:0 0 0 3px var(--puffer)}
+.pad button{width:112px;height:112px;font:400 1.3rem var(--display);background:var(--panel);touch-action:none}
 .pad button.on{background:var(--puffer);color:var(--abyss)}
 @media (pointer:coarse){.pad{display:flex}}
 
@@ -194,7 +192,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
       </div>
       <div class="view" id="vLocal" hidden>
         <h2>2 players</h2>
-        <p>Coral: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>, <kbd>Space</kbd> to dash, <kbd>E</kbd> for power. Violet: arrow keys, <kbd>Enter</kbd> to dash, right <kbd>Shift</kbd> for power.</p>
+        <p>One keyboard, first to three goals. Coral swims with <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> and dashes with <kbd>Space</kbd>. Violet uses the arrow keys and <kbd>Enter</kbd>.</p>
         <button class="go" id="btnLocalStart">Play</button>
         <button class="link" data-mode="4">Back</button>
       </div>
@@ -252,7 +250,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
 
   <div class="pad" id="pad">
     <div class="stick" id="stick" aria-label="Swim joystick"><div class="knob" id="knob"></div></div>
-    <div class="btns"><button id="tPower">Power</button><button id="tDash">Dash</button></div>
+    <button id="tDash">Dash</button>
   </div>
 
   <div class="bar"><button id="btnPause" hidden>Pause (P)</button><button id="btnMute">Sound on</button></div>
@@ -261,8 +259,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
     <summary>How to play</summary>
     <div class="legend">
       <div><h2>The aim</h2><p>Knock the ball into the other octopus's cave. The first to three goals wins.</p></div>
-      <div><h2>Controls</h2><p><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or the arrow keys swim, <kbd>Space</kbd> dashes and <kbd>E</kbd> uses your power. On a phone, use the joystick and the two buttons.</p></div>
-      <div><h2>Powers</h2><p>The gold ring around you fills as you play and touch the ball. When it closes, press <kbd>E</kbd>. Every skin has its own power, and rarer skins charge faster and hit harder.</p></div>
+      <div><h2>Controls</h2><p><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or the arrow keys swim, <kbd>Space</kbd> or <kbd>Shift</kbd> dashes. On a phone, use the joystick and the dash button.</p></div>
       <div><h2>Dash</h2><p>A dash hits the ball far harder and stuns the other octopus. You hold three, shown as dots under you, and each takes a moment to refill.</p></div>
       <div><h2>Bubbles</h2><p>Pop one for a power-up. The plus makes you giant, the chevrons give endless dashes, the bolt zaps your rival.</p></div>
       <div><h2>Chests and skins</h2><p>Beat an opponent to win a chest. Harder opponents give rarer chests, and each has its own pool and ball. Chests hold skins; a duplicate gives nothing.</p></div>
@@ -318,34 +315,26 @@ const RAR=['Common','Rare','Epic','Legendary','Mythic'];
 const RARCOL=['#cfdde2','#6cc4ff','#d29bff','#ffd75e','#ff8fc7'];
 /* A skin: body colour, tentacle colour, optional pattern (pat) with second colour (p2), optional hat.
    The order matters for online play (skins are sent by position), so add new skins at the end. */
-/* A power is a name, a one-line description and a list of effects. Effects:
-   ['dashes'] refill dashes · ['turbo',secs] endless dashes · ['giant',secs] · ['speed',multiplier,secs] ·
-   ['shield',secs] cannot be stunned or slowed · ['ghost',secs] swim through the other octopus ·
-   ['magnet',secs,pull] ball drawn to you · ['slow',multiplier,secs] slows the opponent · ['zap',secs] stuns the opponent ·
-   ['wave',radius,speed,stunSecs] shockwave · ['blink'] teleport behind the ball · ['shot',reach,speed,hotSecs] blast the ball at the other cave. */
-const P=(name,desc,fx)=>({name,desc,fx});
-const BASE_POW=P('Burst','Refills all three dashes.',[['dashes']]);
-const RATE=[1,1.1,1.2,1.3,1.5];                        // rarer skins charge their power faster: Common, Rare, Epic, Legendary, Mythic
 const SKINS=[
-  {id:'coral',name:'Coral',rar:0,col:CORAL,dark:CORAL_D,base:true,pow:BASE_POW},
-  {id:'lime',name:'Lime',rar:0,col:'#9be15d',dark:'#5fa82e',pow:P('Sprint','Swim 30% faster for 3 seconds.',[['speed',1.3,3]])},
-  {id:'sky',name:'Sky',rar:0,col:'#6ec6ff',dark:'#3789c9',pow:P('Shield','Nothing can stun or slow you for 4 seconds.',[['shield',4]])},
-  {id:'sunny',name:'Sunny',rar:0,col:'#ffd166',dark:'#d99a1c',pow:P('Dazzle','Slows your opponent for 2.5 seconds.',[['slow',.7,2.5]])},
-  {id:'gum',name:'Bubblegum',rar:0,col:'#ff9ecf',dark:'#d0609c',pow:P('Pop','A shockwave knocks the ball away from you.',[['wave',150,650,0]])},
-  {id:'mint',name:'Mint',rar:0,col:'#7fe3c4',dark:'#3ea888',pow:P('Tug','Pulls the ball toward you for a moment.',[['magnet',1.6,900]])},
-  {id:'slate',name:'Slate',rar:0,col:'#9fb0c3',dark:'#62748a',pow:P('Bulk','Grow giant for 3 seconds.',[['giant',3]])},
-  {id:'tiger',name:'Tiger',rar:1,col:'#ff9f43',dark:'#b85c00',pat:'stripes',p2:'#7a3b00',pow:P('Pounce','A faster, longer sprint, with your dashes refilled.',[['speed',1.45,3.5],['dashes']])},
-  {id:'dotty',name:'Dotty',rar:1,col:'#ff7aa8',dark:'#c44a78',pat:'spots',p2:'#fff4f8',pow:P('Big pop','A bigger shockwave that also stuns an opponent caught in it.',[['wave',195,800,.45]])},
-  {id:'dipped',name:'Dipped',rar:1,col:'#3fc1c9',dark:'#23878e',pat:'dip',p2:'#fff1c9',pow:P('Strong tug','Pulls the ball toward you harder and for longer.',[['magnet',2.3,1250]])},
-  {id:'party',name:'Party',rar:1,col:'#9be15d',dark:'#5fa82e',hat:'party',pow:P('Party time','Endless dashes for 4 seconds.',[['turbo',4]])},
-  {id:'cool',name:'Cool',rar:1,col:'#6ec6ff',dark:'#3789c9',hat:'shades',pow:P('Chill','Slows your opponent right down for 3 seconds.',[['slow',.55,3]])},
-  {id:'dapper',name:'Dapper',rar:1,col:'#c9a7ff',dark:'#8d6bd1',hat:'tophat',pow:P('Blink','Teleports you behind the ball with your dashes refilled.',[['blink'],['dashes']])},
-  {id:'lantern',name:'Lantern',rar:2,col:'#7ff9ff',dark:'#2fb8c4',pat:'glow',pow:P('Flashbang','Stuns your opponent for over a second.',[['zap',1.2]])},
-  {id:'ghost',name:'Ghost',rar:2,col:'#f2fbff',dark:'#c5dde6',pat:'ghost',pow:P('Phase','For 4 seconds you swim faster, pass through your opponent and cannot be stunned.',[['ghost',4],['speed',1.3,4],['shield',4]])},
-  {id:'magma',name:'Magma',rar:2,col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true,pow:P('Fireball','Blasts a nearby ball at the other cave. It stuns your opponent if they touch it.',[['shot',150,1150,1.5]])},
-  {id:'golden',name:'Golden',rar:3,col:'#ffcf3f',dark:'#c98f12',pat:'gold',pow:P('Gold rush','Giant, with endless dashes, for 5 seconds.',[['giant',5],['turbo',5]])},
-  {id:'stardust',name:'Stardust',rar:3,col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true,pow:P('Meteor','Teleports you to the ball and blasts it at the other cave.',[['blink'],['shot',400,1250,2]])},
-  {id:'royal',name:'Rainbow Royal',rar:4,col:'#ff5fa8',dark:'#c2337a',pat:'rainbow',hat:'crown',pow:P('Royal flush','Stuns your opponent, then makes you a fast giant with endless dashes for 5 seconds.',[['zap',1.4],['giant',5],['turbo',5],['speed',1.2,5]])}
+  {id:'coral',name:'Coral',rar:0,col:CORAL,dark:CORAL_D,base:true},
+  {id:'lime',name:'Lime',rar:0,col:'#9be15d',dark:'#5fa82e'},
+  {id:'sky',name:'Sky',rar:0,col:'#6ec6ff',dark:'#3789c9'},
+  {id:'sunny',name:'Sunny',rar:0,col:'#ffd166',dark:'#d99a1c'},
+  {id:'gum',name:'Bubblegum',rar:0,col:'#ff9ecf',dark:'#d0609c'},
+  {id:'mint',name:'Mint',rar:0,col:'#7fe3c4',dark:'#3ea888'},
+  {id:'slate',name:'Slate',rar:0,col:'#9fb0c3',dark:'#62748a'},
+  {id:'tiger',name:'Tiger',rar:1,col:'#ff9f43',dark:'#b85c00',pat:'stripes',p2:'#7a3b00'},
+  {id:'dotty',name:'Dotty',rar:1,col:'#ff7aa8',dark:'#c44a78',pat:'spots',p2:'#fff4f8'},
+  {id:'dipped',name:'Dipped',rar:1,col:'#3fc1c9',dark:'#23878e',pat:'dip',p2:'#fff1c9'},
+  {id:'party',name:'Party',rar:1,col:'#9be15d',dark:'#5fa82e',hat:'party'},
+  {id:'cool',name:'Cool',rar:1,col:'#6ec6ff',dark:'#3789c9',hat:'shades'},
+  {id:'dapper',name:'Dapper',rar:1,col:'#c9a7ff',dark:'#8d6bd1',hat:'tophat'},
+  {id:'lantern',name:'Lantern',rar:2,col:'#7ff9ff',dark:'#2fb8c4',pat:'glow'},
+  {id:'ghost',name:'Ghost',rar:2,col:'#f2fbff',dark:'#c5dde6',pat:'ghost'},
+  {id:'magma',name:'Magma',rar:2,col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true},
+  {id:'golden',name:'Golden',rar:3,col:'#ffcf3f',dark:'#c98f12',pat:'gold'},
+  {id:'stardust',name:'Stardust',rar:3,col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true},
+  {id:'royal',name:'Rainbow Royal',rar:4,col:'#ff5fa8',dark:'#c2337a',pat:'rainbow',hat:'crown'}
 ];
 /* Chest odds are the percentage chance of each rarity: Common, Rare, Epic, Legendary, Mythic. Each row adds up to 100. */
 const CHESTS=[
@@ -372,20 +361,19 @@ const BALLS=[
 ];
 /* The ladder. chest = index into CHESTS, map and ball = indexes above, ai = how well the opponent plays. */
 const LADDER=[
-  {name:'Bubbles',chest:0,map:0,ball:0,skin:{rate:.8,col:'#8fd3ff',dark:'#4f9fd6'},ai:{speed:.58,lead:.02,err:90,align:.95,cd:2.2,rush:false,pups:false}},
-  {name:'Shelly',chest:0,map:0,ball:1,skin:{pow:P('Pop','A shockwave knocks the ball away.',[['wave',150,650,0]]),col:'#ffb3d1',dark:'#d0709c',hat:'party'},ai:{speed:.68,lead:.04,err:70,align:.94,cd:1.7,rush:false,pups:false}},
-  {name:'Inky',chest:1,map:1,ball:0,skin:{pow:P('Ink cloud','Slows you for 2.5 seconds.',[['slow',.65,2.5]]),col:'#5b6b8c',dark:'#36415a'},ai:{speed:.77,lead:.09,err:48,align:.92,cd:1.3,rush:false,pups:true}},
-  {name:'Riptide',chest:1,map:1,ball:2,skin:{rate:1.1,pow:P('Pounce','A fast sprint with dashes refilled.',[['speed',1.45,3.5],['dashes']]),col:'#ff9f43',dark:'#b85c00',pat:'stripes',p2:'#7a3b00'},ai:{speed:.86,lead:.14,err:30,align:.9,cd:.95,rush:true,pups:true}},
-  {name:'Brine',chest:2,map:2,ball:3,skin:{rate:1.2,pow:P('Chill','Slows you right down for 3 seconds.',[['slow',.55,3]]),col:'#3fc1c9',dark:'#23878e',pat:'dip',p2:'#fff1c9',hat:'shades'},ai:{speed:.93,lead:.17,err:18,align:.88,cd:.72,rush:true,pups:true}},
-  {name:'Undertow',chest:2,map:2,ball:4,skin:{rate:1.2,pow:P('Fireball','Blasts the ball at your cave. It stuns you if you touch it.',[['shot',150,1150,1.5]]),col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true},ai:{speed:1,lead:.2,err:8,align:.86,cd:.5,rush:true,pups:true}},
-  {name:'Maelstrom',chest:3,map:3,ball:2,skin:{rate:1.3,pow:P('Whirlpool','Drags the ball toward it and speeds up.',[['magnet',2.5,1300],['speed',1.25,2.5]]),col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true},ai:{speed:1.06,lead:.22,err:4,align:.85,cd:.4,rush:true,pups:true}},
-  {name:'The Kraken',chest:3,map:4,ball:4,skin:{rate:1.4,pow:P('Kraken grip','Stuns you and turns giant for 5 seconds.',[['zap',1.2],['giant',5]]),col:'#8c1f3f',dark:'#4f0f22',pat:'magma',p2:'#ffd75e',lite:true,hat:'crown'},ai:{speed:1.12,lead:.24,err:0,align:.84,cd:.3,rush:true,pups:true}}
+  {name:'Bubbles',chest:0,map:0,ball:0,skin:{col:'#8fd3ff',dark:'#4f9fd6'},ai:{speed:.58,lead:.02,err:90,align:.95,cd:2.2,rush:false,pups:false}},
+  {name:'Shelly',chest:0,map:0,ball:1,skin:{col:'#ffb3d1',dark:'#d0709c',hat:'party'},ai:{speed:.68,lead:.04,err:70,align:.94,cd:1.7,rush:false,pups:false}},
+  {name:'Inky',chest:1,map:1,ball:0,skin:{col:'#5b6b8c',dark:'#36415a'},ai:{speed:.77,lead:.09,err:48,align:.92,cd:1.3,rush:false,pups:true}},
+  {name:'Riptide',chest:1,map:1,ball:2,skin:{col:'#ff9f43',dark:'#b85c00',pat:'stripes',p2:'#7a3b00'},ai:{speed:.86,lead:.14,err:30,align:.9,cd:.95,rush:true,pups:true}},
+  {name:'Brine',chest:2,map:2,ball:3,skin:{col:'#3fc1c9',dark:'#23878e',pat:'dip',p2:'#fff1c9',hat:'shades'},ai:{speed:.93,lead:.17,err:18,align:.88,cd:.72,rush:true,pups:true}},
+  {name:'Undertow',chest:2,map:2,ball:4,skin:{col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true},ai:{speed:1,lead:.2,err:8,align:.86,cd:.5,rush:true,pups:true}},
+  {name:'Maelstrom',chest:3,map:3,ball:2,skin:{col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true},ai:{speed:1.06,lead:.22,err:4,align:.85,cd:.4,rush:true,pups:true}},
+  {name:'The Kraken',chest:3,map:4,ball:4,skin:{col:'#8c1f3f',dark:'#4f0f22',pat:'magma',p2:'#ffd75e',lite:true,hat:'crown'},ai:{speed:1.12,lead:.24,err:0,align:.84,cd:.3,rush:true,pups:true}}
 ];
 const STATES=['play','countdown','goal','over'];
 /* Online play. Room codes map to PeerJS ids with this prefix. Change the prefix if you fork the game. */
 const PREFIX='pufferpolo1-',ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const calm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-const coarse=window.matchMedia&&matchMedia('(pointer:coarse)').matches;
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const $=id=>document.getElementById(id);
 const cv=$('pool');let ctx=cv.getContext('2d');
@@ -394,25 +382,23 @@ let sc=1;
 /* ---------- state ---------- */
 let mode=4,diff=1,demo=true,state='play',resumeTo='play',score=[0,0],time=MATCH,overtime=false,otTime=0;
 let phaseT=0,banner=null,shake=0,lastCount=0,slow=0,hitStop=0,T=0,pupT=5,bubble=null;
-const ball={x:W/2,y:GY,vx:0,vy:0,r:BR,puff:0,face:1,tilt:0,spin:0,pt:0,hotT:0,hotTeam:0,ex:0,ey:0};
+const ball={x:W/2,y:GY,vx:0,vy:0,r:BR,puff:0,face:1,tilt:0,spin:0,pt:0,ex:0,ey:0};
 let MAP=MAPS[0],BALL=BALLS[0];
-const mkOcto=team=>({team,x:0,y:0,vx:0,vy:0,r:24,ang:team?Math.PI:0,charges:3,dashT:0,dashCd:0,dashHit:false,dHeld:false,pHeld:false,
-  stunT:0,bigT:0,turboT:0,scale:1,ex:0,ey:0,skin:null,
-  pw:0,spdT:0,spdM:1,shieldT:0,slowT:0,slowM:1,magT:0,magA:0,ghostT:0,       // power meter and the effects powers can switch on
-  ai:{t:0,err:0,errT:0,pd:0}});
+const mkOcto=team=>({team,x:0,y:0,vx:0,vy:0,r:24,ang:team?Math.PI:0,charges:3,dashT:0,dashCd:0,dashHit:false,dHeld:false,
+  stunT:0,bigT:0,turboT:0,scale:1,ex:0,ey:0,skin:null,ai:{t:0,err:0,errT:0}});
 const octos=[mkOcto(0),mkOcto(1)];
 const objs=[ball,octos[0],octos[1]];
 let parts=[],texts=[];
 const amb=Array.from({length:26},()=>({x:WL+Math.random()*(WR-WL),y:TOP+Math.random()*(BOT-TOP),r:1.5+Math.random()*4,s:14+Math.random()*30,p:Math.random()*TAU}));
 const KELP=[[150,120,0],[232,170,1.3],[338,90,2.1],[520,130,.6],[704,105,3.2],[880,150,1.9],[986,95,.2],[1062,165,2.7]];
-const keys={},touch={x:0,y:0,dash:false,pow:false};
+const keys={},touch={x:0,y:0,dash:false};
 /* net.role is 'host' or 'guest' once a room exists; net.on turns true when both players are connected */
 let net={role:null,on:false},GUEST=false,HOST=false,REPLAY=false;
 
 function kickoff(){
-  octos.forEach((o,i)=>{o.x=i?WR-210:WL+210;o.y=GY;o.vx=o.vy=0;o.ang=i?Math.PI:0;o.charges=3;o.dashT=0;o.dashCd=0;o.stunT=0;o.bigT=0;o.turboT=0;o.spdT=0;o.shieldT=0;o.slowT=0;o.magT=0;o.ghostT=0;o.r=24;o.ai.t=.25+Math.random()*.35;});
+  octos.forEach((o,i)=>{o.x=i?WR-210:WL+210;o.y=GY;o.vx=o.vy=0;o.ang=i?Math.PI:0;o.charges=3;o.dashT=0;o.dashCd=0;o.stunT=0;o.bigT=0;o.turboT=0;o.r=24;o.ai.t=.25+Math.random()*.35;});
   ball.x=W/2;ball.y=GY;ball.vx=0;ball.vy=0;ball.puff=0;
-  ball.spin=0;ball.pt=0;ball.hotT=0;ball.hotTeam=0;
+  ball.spin=0;ball.pt=0;
   bubble=null;pupT=4+Math.random()*3;slow=0;hitStop=0;
 }
 function setArena(mi,bi){                               // choose the map and the ball
@@ -489,11 +475,6 @@ const FX={
     tone(392,.14,'triangle',.08);setTimeout(()=>tone(523,.14,'triangle',.08),130);setTimeout(()=>tone(784,.32,'triangle',.08),260);
   },
   go(){banner={text:'GO!',color:GOLD,t:.7,max:.7};tone(880,.25,'sine',.08);},
-  power(team,name,x,y,x0,y0){
-    say(x,y-58,name+'!',GOLD);burst(x,y,GOLD,20,280);
-    if(Math.hypot(x-x0,y-y0)>40)burst(x0,y0,FOAM,14,200);
-    shake=Math.max(shake,5);tone(330,.12,'square',.05,330);setTimeout(()=>tone(660,.22,'triangle',.08,220),90);
-  },
   ot(){banner={text:'OVERTIME',color:GOLD,t:1.6,max:1.6};}
 };
 function fx(k,...a){
@@ -503,24 +484,18 @@ function fx(k,...a){
 }
 
 /* ---------- input ---------- */
-const latch={};                                         // keys pressed since the last time controls were read, so a very quick tap is never missed
-const K=c=>keys[c]||latch[c];
-function clearLatch(){for(const c in latch)delete latch[c];}
 function humanInput(p){
-  const solo=mode!==2;let x=0,y=0,d=false,pw=false;
+  const k=keys,solo=mode!==2;let x=0,y=0,d=false;
   if(p===0){
-    x=(K('KeyD')?1:0)-(K('KeyA')?1:0)+touch.x;y=(K('KeyS')?1:0)-(K('KeyW')?1:0)+touch.y;
-    d=!!(K('Space')||K('ShiftLeft')||K('KeyF')||touch.dash);pw=!!(K('KeyE')||K('KeyQ')||touch.pow);
-    if(solo){
-      x+=(K('ArrowRight')?1:0)-(K('ArrowLeft')?1:0);y+=(K('ArrowDown')?1:0)-(K('ArrowUp')?1:0);
-      d=d||!!(K('Enter')||K('NumpadEnter')||K('Slash'));pw=pw||!!(K('ShiftRight')||K('Period')||K('KeyX'));
-    }
+    x=(k.KeyD?1:0)-(k.KeyA?1:0)+touch.x;y=(k.KeyS?1:0)-(k.KeyW?1:0)+touch.y;
+    d=!!(k.Space||k.ShiftLeft||k.KeyF||touch.dash);
+    if(solo){x+=(k.ArrowRight?1:0)-(k.ArrowLeft?1:0);y+=(k.ArrowDown?1:0)-(k.ArrowUp?1:0);d=d||!!(k.Enter||k.NumpadEnter||k.ShiftRight||k.Slash);}
   }else{
-    x=(K('ArrowRight')?1:0)-(K('ArrowLeft')?1:0);y=(K('ArrowDown')?1:0)-(K('ArrowUp')?1:0);
-    d=!!(K('Enter')||K('NumpadEnter')||K('Slash'));pw=!!(K('ShiftRight')||K('Period'));
+    x=(k.ArrowRight?1:0)-(k.ArrowLeft?1:0);y=(k.ArrowDown?1:0)-(k.ArrowUp?1:0);
+    d=!!(k.Enter||k.NumpadEnter||k.Slash||k.ShiftRight);
   }
   const m=Math.hypot(x,y);if(m>1){x/=m;y/=m;}
-  return{x,y,d,p:pw};
+  return{x,y,d};
 }
 function aiInput(o,sk,dt){
   const atk=o.team?-1:1,gx=atk>0?WR+24:WL-24,inp={x:0,y:0,d:false},ai=o.ai;
@@ -543,26 +518,15 @@ function aiInput(o,sk,dt){
     if(align>sk.align&&sd<165&&sd>o.r+ball.r-6){inp.x=sx/sd;inp.y=sy/sd;inp.d=true;ai.t=sk.cd;}
     else if(sk.rush&&md>400&&o.charges>=2){inp.d=true;ai.t=sk.cd;}
   }
-  if(o.pw>=100&&o.stunT<=0){                              // the computer uses its power once it is full and useful
-    ai.pd-=dt;
-    const pf=powerOf(o).fx,has=k=>pf.some(e=>e[0]===k),shot=pf.find(e=>e[0]==='shot'),wave=pf.find(e=>e[0]==='wave');
-    let ok=sd<420;
-    if(has('blink'))ok=sd>240;
-    else if(shot)ok=sd<shot[1]+o.r+ball.r-8;
-    else if(wave)ok=sd<wave[1]&&align>.2;
-    else if(has('magnet'))ok=sd>110&&sd<420;
-    if(ok&&ai.pd<=0)inp.p=true;
-  }else ai.pd=.4+sk.cd;
   return inp;
 }
 function localInputs(dt){
-  const ins=octos.map((o,i)=>{
+  return octos.map((o,i)=>{
     const human=!demo&&(i===0||mode===2),sk=demo?SKILL[1]:mode===4?LADDER[run.opp].ai:SKILL[diff];
     o.scale=human?1:sk.speed;
     const inp=human?humanInput(i):aiInput(o,sk,dt);
-    inp.dp=inp.d&&!o.dHeld;o.dHeld=inp.d;inp.pp=!!inp.p&&!o.pHeld;o.pHeld=!!inp.p;return inp;
+    inp.dp=inp.d&&!o.dHeld;o.dHeld=inp.d;return inp;
   });
-  clearLatch();return ins;
 }
 
 /* ---------- physics ---------- */
@@ -592,64 +556,21 @@ function arena(o,e,loud){
   if(o.x>WR&&(o.y<G1||o.y>G2))o.x=WR-r;
   o.x=clamp(o.x,WL-GD+r*.5,WR+GD-r*.5);
 }
-const powerOf=o=>(o.skin&&o.skin.pow)||BASE_POW;
-const rateOf=o=>o.skin?(o.skin.rate||RATE[o.skin.rar]||1):1;
-function addPower(o,n){o.pw=Math.min(100,o.pw+n*rateOf(o));}
-function goalDir(o){                                    // unit vector from the ball to the cave this octopus attacks
-  const dx=(o.team?WL-24:WR+24)-ball.x,dy=GY-ball.y,d=Math.hypot(dx,dy)||1;return[dx/d,dy/d];
-}
-function usePower(o){
-  const pw=powerOf(o),other=octos[1-o.team];
-  const shot=pw.fx.find(e=>e[0]==='shot'),blink=pw.fx.some(e=>e[0]==='blink');
-  if(shot&&!blink&&Math.hypot(ball.x-o.x,ball.y-o.y)>shot[1]+o.r+ball.r)return;   // a shot needs the ball in reach; the charge is kept
-  o.pw=0;
-  const x0=o.x,y0=o.y;
-  for(const e of pw.fx){
-    const k=e[0];
-    if(k==='dashes')o.charges=3;
-    else if(k==='turbo')o.turboT=e[1];
-    else if(k==='giant')o.bigT=e[1];
-    else if(k==='speed'){o.spdM=e[1];o.spdT=e[2];}
-    else if(k==='shield'){o.shieldT=e[1];o.slowT=0;}
-    else if(k==='ghost')o.ghostT=e[1];
-    else if(k==='magnet'){o.magT=e[1];o.magA=e[2];}
-    else if(k==='slow'){if(other.shieldT<=0){other.slowM=e[1];other.slowT=e[2];}}
-    else if(k==='zap'){if(other.shieldT<=0)other.stunT=Math.max(other.stunT,e[1]);}
-    else if(k==='wave'){
-      let dx=ball.x-o.x,dy=ball.y-o.y,d=Math.hypot(dx,dy)||1;
-      if(d<e[1]+ball.r){ball.vx=dx/d*e[2];ball.vy=dy/d*e[2];ball.puff=1;}
-      dx=other.x-o.x;dy=other.y-o.y;d=Math.hypot(dx,dy)||1;
-      if(d<e[1]+other.r&&other.ghostT<=0){other.vx+=dx/d*520;other.vy+=dy/d*520;if(e[3]&&other.shieldT<=0)other.stunT=Math.max(other.stunT,e[3]);}
-    }
-    else if(k==='blink'){
-      const g=goalDir(o),gap=o.r+ball.r+6;
-      o.x=clamp(ball.x-g[0]*gap,WL+o.r,WR-o.r);o.y=clamp(ball.y-g[1]*gap,TOP+o.r,BOT-o.r);o.vx=o.vy=0;
-      arena(o,.15,false);
-    }
-    else if(k==='shot'){
-      const g=goalDir(o);
-      ball.vx=g[0]*e[2];ball.vy=g[1]*e[2];ball.puff=1;ball.hotT=e[3];ball.hotTeam=o.team;hitStop=.06;
-    }
-  }
-  fx('power',o.team,pw.name,o.x,o.y,x0,y0);
-}
-function stepOcto(o,inp,dp,pp,h){
-  o.stunT-=h;o.bigT-=h;o.turboT-=h;o.dashCd-=h;o.spdT-=h;o.shieldT-=h;o.slowT-=h;o.magT-=h;o.ghostT-=h;
-  o.pw=Math.min(100,o.pw+2.2*rateOf(o)*h);              // the meter fills slowly by itself, faster from touching the ball
+function stepOcto(o,inp,dp,h){
+  o.stunT-=h;o.bigT-=h;o.turboT-=h;o.dashCd-=h;
   const rT=o.bigT>0?40:24;o.r+=(rT-o.r)*Math.min(1,h*10);
   const stunned=o.stunT>0,ix=stunned?0:inp.x,iy=stunned?0:inp.y;
-  const sp=o.scale*(o.turboT>0?1.3:1)*(o.spdT>0?o.spdM:1)*(o.slowT>0?o.slowM:1);
+  const sp=o.scale*(o.turboT>0?1.3:1);
   if(o.turboT>0)o.charges=3;else if(o.charges<3)o.charges=Math.min(3,o.charges+h/1.5);
   if(dp&&!stunned&&o.charges>=1&&o.dashCd<=0){
     let dx=ix,dy=iy;const m=Math.hypot(dx,dy);
     if(m<.2){dx=Math.cos(o.ang);dy=Math.sin(o.ang);}else{dx/=m;dy/=m;}
-    const v=880*Math.max(.85,o.scale)*(o.slowT>0?Math.max(o.slowM,.75):1);
+    const v=880*Math.max(.85,o.scale);
     o.vx=dx*v;o.vy=dy*v;o.dashT=.2;o.dashCd=.28;o.dashHit=false;
     if(o.turboT<=0)o.charges-=1;
     if(GUEST){if(!REPLAY&&o.team===1)FX.dash(o.team,o.x,o.y,dx,dy,o.r);}   // your own dash shows at once
     else fx('dash',o.team,o.x,o.y,dx,dy,o.r);
   }
-  if(pp&&!stunned&&o.pw>=100)usePower(o);
   let k=MAP.slip?2.6:4.5;const acc=MAP.slip?1000:1700;   // icy maps: slow to get going, slow to stop
   if(o.dashT>0){o.dashT-=h;k=1.2;}
   else{o.vx+=ix*acc*sp*h;o.vy+=iy*acc*sp*h;}
@@ -659,11 +580,9 @@ function stepOcto(o,inp,dp,pp,h){
   if(v>40){let da=Math.atan2(o.vy,o.vx)-o.ang;da=Math.atan2(Math.sin(da),Math.cos(da));o.ang+=da*Math.min(1,h*12);}
   arena(o,.15,false);
   if(!REPLAY&&o.turboT>0&&Math.random()<.25)puff(o.x+(Math.random()-.5)*o.r,o.y+(Math.random()-.5)*o.r,0,-20,.4,3,GOLD);
-  if(!REPLAY&&o.spdT>0&&Math.random()<.35)puff(o.x,o.y,-o.vx*.25,-o.vy*.25,.3,4,'rgba(234,252,255,.7)');
 }
 function octoOcto(){
   const a=octos[0],b=octos[1];let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);const R=a.r+b.r;
-  if(a.ghostT>0||b.ghostT>0)return;                     // a phasing octopus passes straight through
   if(d>=R)return;if(d<1e-3){dx=1;dy=0;d=1;}
   const nx=dx/d,ny=dy/d,ma=a.bigT>0?6:3,mb=b.bigT>0?6:3,pen=R-d;
   a.x-=nx*pen*mb/(ma+mb);a.y-=ny*pen*mb/(ma+mb);b.x+=nx*pen*ma/(ma+mb);b.y+=ny*pen*ma/(ma+mb);
@@ -675,7 +594,7 @@ function octoOcto(){
       const ad=a.dashT>0,bd=b.dashT>0;
       if(ad!==bd){
         const hit=ad?b:a,sgn=ad?1:-1;
-        if(hit.stunT<=0&&hit.shieldT<=0){addPower(ad?a:b,8);hit.stunT=.55;hit.vx+=sgn*nx*260;hit.vy+=sgn*ny*260;fx('bonk',hit.x,hit.y-hit.r-14,(a.x+b.x)/2,(a.y+b.y)/2);}
+        if(hit.stunT<=0){hit.stunT=.55;hit.vx+=sgn*nx*260;hit.vy+=sgn*ny*260;fx('bonk',hit.x,hit.y-hit.r-14,(a.x+b.x)/2,(a.y+b.y)/2);}
       }else fx('bump');
     }
   }
@@ -686,11 +605,6 @@ function octoBall(o){
     if(d>=R)return;if(d<1e-3){dx=1;dy=0;d=1;}
     const nx=dx/d,ny=dy/d,pen=R-d;
     if(pass===1){o.x-=nx*pen;o.y-=ny*pen;return;}
-    if(ball.hotT>0&&ball.hotTeam!==o.team){             // a fireball goes straight through the other octopus and stuns it
-      o.x-=nx*pen;o.y-=ny*pen;o.vx-=nx*260;o.vy-=ny*260;
-      if(o.shieldT<=0&&o.stunT<=0){o.stunT=.6;fx('bonk',o.x,o.y-o.r-14,ball.x,ball.y);}
-      return;
-    }
     ball.x+=nx*pen;ball.y+=ny*pen;
     const ms=o.bigT>0?6:3,dashing=o.dashT>0,vn=(ball.vx-o.vx)*nx+(ball.vy-o.vy)*ny;
     let j=0;
@@ -698,15 +612,14 @@ function octoBall(o){
     if(dashing&&!o.dashHit){
       const want=(o.bigT>0?1000:820)*BALL.hit,cur=ball.vx*nx+ball.vy*ny;
       if(cur<want){ball.vx+=(want-cur)*nx;ball.vy+=(want-cur)*ny;}
-      o.dashHit=true;ball.puff=1;hitStop=.05;addPower(o,18);
+      o.dashHit=true;ball.puff=1;hitStop=.05;
       fx('hit',o.team,ball.x-nx*ball.r,ball.y-ny*ball.r);
-    }else if(j>170){ball.puff=Math.max(ball.puff,.35);addPower(o,6);fx('soft');}
+    }else if(j>170){ball.puff=Math.max(ball.puff,.35);fx('soft');}
     arena(ball,BALL.rest,false);
   }
 }
 function stepBall(h){
   ball.vy+=clamp((GY+(BALL.lift||0)-ball.y)*BALL.spring,-110,110)*h;
-  if(ball.hotT>0)ball.hotT-=h;
   if(BALL.pulse){ball.pt+=h;if(ball.pt>1.3){ball.pt=0;ball.vy-=130;}}   // the jellyfish kicks itself upward now and then
   const f=Math.exp(-BALL.drag*h);ball.vx*=f;ball.vy*=f;
   ball.x+=ball.vx*h;ball.y+=ball.vy*h;ball.spin+=ball.vx/ball.r*h;
@@ -715,20 +628,18 @@ function stepBall(h){
 }
 function applyPup(o,type){
   const other=octos[1-o.team];
-  if(type===0)o.bigT=7;else if(type===1)o.turboT=6;else if(other.shieldT<=0)other.stunT=1.6;
+  if(type===0)o.bigT=7;else if(type===1)o.turboT=6;else other.stunT=1.6;
   fx('pup',type,o.team,o.x,o.y,other.x,other.y,bubble.x,bubble.y);
 }
 /* One step of the pool. inputs = [{x,y,dp},{x,y,dp}], dp meaning "dash pressed this step". */
 function physFrame(dt,inputs){
-  const auth=!GUEST,dps=[inputs[0].dp,inputs[1].dp],pps=[inputs[0].pp,inputs[1].pp];
+  const auth=!GUEST,dps=[inputs[0].dp,inputs[1].dp];
   const n=Math.max(1,Math.round(dt*120)),h=dt/n;
   for(let s=0;s<n;s++){
-    for(let i=0;i<2;i++){stepOcto(octos[i],inputs[i],dps[i],pps[i],h);dps[i]=pps[i]=false;}
-    for(const o of octos)if(o.magT>0){const dx=o.x-ball.x,dy=o.y-ball.y,d=Math.hypot(dx,dy)||1;ball.vx+=dx/d*o.magA*h;ball.vy+=dy/d*o.magA*h;}
+    for(let i=0;i<2;i++){stepOcto(octos[i],inputs[i],dps[i],h);dps[i]=false;}
     octoOcto();stepBall(h);octos.forEach(octoBall);
     if(auth&&state==='play'){const gr=Math.min(ball.r,22);if(ball.x<WL-gr)goal(1);else if(ball.x>WR+gr)goal(0);}
   }
-  if(!REPLAY&&ball.hotT>0)puff(ball.x+(Math.random()-.5)*ball.r,ball.y+(Math.random()-.5)*ball.r,-ball.vx*.1,-ball.vy*.1,.35,5+Math.random()*4,Math.random()<.5?'#ff7a1a':GOLD);
   if(Math.abs(ball.vx)>30)ball.face=ball.vx>0?1:-1;
   ball.tilt+=(ball.face*clamp(ball.vy/900,-.6,.6)-ball.tilt)*Math.min(1,dt*10);
   ball.puff=Math.max(0,ball.puff-dt*1.1);
@@ -749,7 +660,6 @@ function physFrame(dt,inputs){
 function goal(team){
   if(!demo){score[team]++;paintScore();}
   state='goal';phaseT=demo?1.7:2.6;slow=1;
-  addPower(octos[1-team],35);addPower(octos[team],10);  // conceding charges your power, so a comeback is always on
   fx('goal',team,demo?1.4:2.2);
 }
 function startCountdown(){kickoff();state='countdown';phaseT=3;lastCount=4;banner=null;}
@@ -772,7 +682,7 @@ function startMatch(){
   demo=false;score=[0,0];time=mode===4?RUN_TIME:MATCH;overtime=false;otTime=0;parts=[];texts=[];
   const opp=LADDER[run.opp];
   if(mode===4)setArena(opp.map,opp.ball);else setArena(0,0);
-  octos[0].skin=mySkin();octos[1].skin=mode===4?opp.skin:null;octos.forEach(o=>{o.pw=0;});
+  octos[0].skin=mySkin();octos[1].skin=mode===4?opp.skin:null;
   names();paintScore();showCard(null);blurActive();
   startCountdown();
 }
@@ -787,7 +697,7 @@ function showOver(){
 function endMatch(){state='over';showOver();}
 function toMenu(){
   demo=true;state='play';mode=4;score=[0,0];time=MATCH;overtime=false;banner=null;
-  octos.forEach(o=>{o.ex=o.ey=0;o.skin=null;o.pw=0;});ball.ex=ball.ey=0;
+  octos.forEach(o=>{o.ex=o.ey=0;o.skin=null;});ball.ex=ball.ey=0;
   names();paintScore();updateRunBox();kickoff();showCard('vMenu');
 }
 function pause(){if(demo||net.on||state==='over'||state==='paused')return;resumeTo=state;state='paused';showCard('vPause');}
@@ -942,7 +852,7 @@ function startOnline(first){
   if(first){net.on=true;HOST=true;GUEST=false;net.lastRx=performance.now();}
   mode=3;demo=false;score=[0,0];time=MATCH;overtime=false;otTime=0;parts=[];texts=[];
   octos.forEach(o=>{o.scale=1;o.dHeld=false;});
-  setArena(0,0);octos[0].skin=mySkin();octos[1].skin=skinAt(net.gsk);octos.forEach(o=>{o.pw=0;o.pHeld=false;});
+  setArena(0,0);octos[0].skin=mySkin();octos[1].skin=skinAt(net.gsk);
   net.rmSeen=net.rmGot;
   names();paintScore();showCard(null);blurActive();
   startCountdown();
@@ -956,36 +866,35 @@ function hostData(m){
     const seq=a[0]|0;
     if(seq<=net.ack||net.pend.has(seq)||net.pend.size>120)continue;
     let x=+a[1]||0,y=+a[2]||0;const mag=Math.hypot(x,y);if(mag>1){x/=mag;y/=mag;}   // never trust the other side's numbers
-    net.pend.set(seq,{x,y,d:!!a[3],dp:!!a[4],pp:!!a[5]});
+    net.pend.set(seq,{x,y,d:!!a[3],dp:!!a[4]});
   }
   net.et=+m.ts||0;net.rmGot=m.rm|0;net.gsk=m.sk|0;octos[1].skin=skinAt(net.gsk);
 }
 function takeGuestInput(){
   const p=net.pend,ks=[...p.keys()].filter(k=>k>net.ack).sort((a,b)=>a-b);
-  if(!ks.length)return{x:net.gi.x,y:net.gi.y,d:net.gi.d,dp:false,pp:false};        // nothing new: hold the last controls
-  let k=ks[0],dp=false,pp=false;
+  if(!ks.length)return{x:net.gi.x,y:net.gi.y,d:net.gi.d,dp:false};        // nothing new: hold the last controls
+  let k=ks[0],dp=false;
   if(ks.length>3){                                                         // fallen behind: skip ahead but keep any dash press
     const target=ks[ks.length-2];
-    for(const q of ks){if(q>target)break;if(p.get(q).dp)dp=true;if(p.get(q).pp)pp=true;k=q;}
+    for(const q of ks){if(q>target)break;if(p.get(q).dp)dp=true;k=q;}
   }
   const inp=p.get(k);
   for(const q of ks)if(q<=k)p.delete(q);
-  net.ack=k;net.gi={x:inp.x,y:inp.y,d:inp.d,dp:inp.dp||dp,pp:inp.pp||pp};
+  net.ack=k;net.gi={x:inp.x,y:inp.y,d:inp.d,dp:inp.dp||dp};
   return net.gi;
 }
 function sendSnap(){
   net.ev=net.ev.filter(e=>net.tick-e.t<24);
   netSend({t:'s',n:net.tick,ack:net.ack,et:net.et,sk:[skinIdx(),net.gsk],hi:[net.hi.x,net.hi.y,net.hi.d?1:0],
-    o:octos.map(o=>[r1(o.x),r1(o.y),r1(o.vx),r1(o.vy),r1(o.r),r3(o.ang),r3(o.charges),r3(Math.max(o.dashT,-1)),r3(Math.max(o.dashCd,-1)),o.dashHit?1:0,r3(Math.max(o.stunT,-1)),r3(Math.max(o.bigT,-1)),r3(Math.max(o.turboT,-1)),
-      r1(o.pw),r3(Math.max(o.spdT,-1)),o.spdM,r3(Math.max(o.shieldT,-1)),r3(Math.max(o.slowT,-1)),o.slowM,r3(Math.max(o.magT,-1)),o.magA,r3(Math.max(o.ghostT,-1))]),
-    b:[r1(ball.x),r1(ball.y),r1(ball.vx),r1(ball.vy),r3(ball.puff),ball.face,r3(ball.tilt),r3(Math.max(ball.hotT,0)),ball.hotTeam],
+    o:octos.map(o=>[r1(o.x),r1(o.y),r1(o.vx),r1(o.vy),r1(o.r),r3(o.ang),r3(o.charges),r3(Math.max(o.dashT,-1)),r3(Math.max(o.dashCd,-1)),o.dashHit?1:0,r3(Math.max(o.stunT,-1)),r3(Math.max(o.bigT,-1)),r3(Math.max(o.turboT,-1))]),
+    b:[r1(ball.x),r1(ball.y),r1(ball.vx),r1(ball.vy),r3(ball.puff),ball.face,r3(ball.tilt)],
     g:[STATES.indexOf(state),r3(phaseT),r3(time),overtime?1:0,r3(otTime),score[0],score[1],r3(slow),r3(Math.max(hitStop,0))],
     pb:bubble?[r1(bubble.x),r1(bubble.y),bubble.type,r3(bubble.p)]:0,
     ev:net.ev.map(e=>[e.i,e.k,e.a])});
 }
 function hostTick(){
-  const o=octos[0],raw=humanInput(0);clearLatch();
-  const hi={x:q2(raw.x),y:q2(raw.y),d:raw.d,dp:raw.d&&!o.dHeld,pp:raw.p&&!o.pHeld};o.dHeld=raw.d;o.pHeld=raw.p;
+  const o=octos[0],raw=humanInput(0);
+  const hi={x:q2(raw.x),y:q2(raw.y),d:raw.d,dp:raw.d&&!o.dHeld};o.dHeld=raw.d;
   net.hi=hi;
   advance(TICK,[hi,takeGuestInput()]);
   net.tick++;
@@ -1015,10 +924,9 @@ function applySnap(s){
   for(let i=0;i<2;i++){
     const o=octos[i],a=s.o[i];
     o.x=a[0];o.y=a[1];o.vx=a[2];o.vy=a[3];o.r=a[4];o.ang=a[5];o.charges=a[6];o.dashT=a[7];o.dashCd=a[8];o.dashHit=!!a[9];o.stunT=a[10];o.bigT=a[11];o.turboT=a[12];
-    o.pw=a[13]||0;o.spdT=a[14]||0;o.spdM=a[15]||1;o.shieldT=a[16]||0;o.slowT=a[17]||0;o.slowM=a[18]||1;o.magT=a[19]||0;o.magA=a[20]||0;o.ghostT=a[21]||0;
   }
   const b=s.b,g=s.g;
-  ball.x=b[0];ball.y=b[1];ball.vx=b[2];ball.vy=b[3];ball.puff=b[4];ball.face=b[5];ball.tilt=b[6];ball.hotT=b[7]||0;ball.hotTeam=b[8]||0;
+  ball.x=b[0];ball.y=b[1];ball.vx=b[2];ball.vy=b[3];ball.puff=b[4];ball.face=b[5];ball.tilt=b[6];
   state=STATES[g[0]]||'play';phaseT=g[1];time=g[2];overtime=!!g[3];otTime=g[4];
   if(score[0]!==g[5]||score[1]!==g[6]){score=[g[5],g[6]];paintScore();}
   slow=g[7];hitStop=g[8];
@@ -1039,11 +947,11 @@ function applySnap(s){
   });
 }
 function guestTick(){
-  const raw=humanInput(0),dp=raw.d&&!net.dHeld,pp=raw.p&&!net.pHeld;clearLatch();net.dHeld=raw.d;net.pHeld=raw.p;
-  const inp={x:q2(raw.x),y:q2(raw.y),d:raw.d,dp,pp};
+  const raw=humanInput(0),dp=raw.d&&!net.dHeld;net.dHeld=raw.d;
+  const inp={x:q2(raw.x),y:q2(raw.y),d:raw.d,dp};
   net.seq++;net.buf.set(net.seq,inp);net.buf.delete(net.seq-40);
   const q=[];
-  for(let k=Math.max(1,net.seq-3);k<=net.seq;k++){const i=net.buf.get(k);if(i)q.push([k,i.x,i.y,i.d?1:0,i.dp?1:0,i.pp?1:0]);}
+  for(let k=Math.max(1,net.seq-3);k<=net.seq;k++){const i=net.buf.get(k);if(i)q.push([k,i.x,i.y,i.d?1:0,i.dp?1:0]);}
   netSend({t:'i',q,ts:Math.round(performance.now()),rm:net.rm,sk:skinIdx()});
   advance(TICK,[net.hi,inp]);
 }
@@ -1155,7 +1063,6 @@ function drawPuffer(){
 }
 function drawBall(){
   const id=BALL.id;
-  if(ball.hotT>0){ctx.save();ctx.globalAlpha=.6;ctx.fillStyle='#ff7a1a';ctx.shadowColor='#ff7a1a';ctx.shadowBlur=24;ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r*1.25,0,TAU);ctx.fill();ctx.restore();}
   if(id==='puffer'){drawPuffer();return;}
   const R=ball.r*(1+ball.puff*.16);
   ctx.save();ctx.translate(ball.x,ball.y);
@@ -1250,7 +1157,6 @@ function drawOcto(o){
   if(pat==='rainbow'){const hue=(T*90)%360;col='hsl('+hue+',95%,66%)';dark='hsl('+((hue+40)%360)+',80%,46%)';}
   const ink=sk&&sk.lite?'#fff1e0':'#04222c',alpha0=ctx.globalAlpha;
   if(pat==='ghost')ctx.globalAlpha=alpha0*.6;
-  if(o.ghostT>0)ctx.globalAlpha*=.5;
   let tx=-o.vx,ty=130-o.vy;const tm=Math.hypot(tx,ty)||1;tx/=tm;ty/=tm;
   const px=-ty,py=tx,len=r*(1.05+Math.min(.9,v/520));
   ctx.lineCap='round';ctx.strokeStyle=dark;ctx.lineWidth=r*.27;
@@ -1263,13 +1169,7 @@ function drawOcto(o){
   }
   const st=1+Math.min(.22,v/3200)+(o.dashT>0?.14:0),ang=Math.atan2(o.vy,o.vx)||0;
   ctx.save();ctx.translate(o.x,o.y);
-  if(o.turboT>0){ctx.strokeStyle='rgba(255,215,94,'+(.5+.3*Math.sin(T*14))+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,r+14,0,TAU);ctx.stroke();}
-  if(o.pw!=null&&o.charges!=null){                       // power meter: a gold arc that closes into a pulsing ring when ready
-    const full=o.pw>=100;
-    ctx.strokeStyle=full?'rgba(255,215,94,'+(.72+.28*Math.sin(T*9))+')':'rgba(255,215,94,.5)';ctx.lineWidth=full?4.5:3;ctx.lineCap='round';
-    ctx.beginPath();ctx.arc(0,0,r+9,-Math.PI/2,-Math.PI/2+TAU*clamp(o.pw/100,0.001,1));ctx.stroke();
-  }
-  if(o.shieldT>0){ctx.fillStyle='rgba(190,240,255,.16)';ctx.strokeStyle='rgba(190,240,255,.85)';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,r+13,0,TAU);ctx.fill();ctx.stroke();}
+  if(o.turboT>0){ctx.strokeStyle='rgba(255,215,94,'+(.5+.3*Math.sin(T*14))+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,r+9,0,TAU);ctx.stroke();}
   if(sk&&o.ring!==false){ctx.strokeStyle=team;ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,r+4.5,0,TAU);ctx.stroke();}   // team colour ring, so skins never hide which side you are on
   ctx.save();ctx.rotate(ang);ctx.scale(st,1/st);
   if(pat==='glow'){ctx.shadowColor='#7ff9ff';ctx.shadowBlur=20;}
@@ -1280,7 +1180,6 @@ function drawOcto(o){
   }
   ctx.strokeStyle='rgba(4,34,44,.5)';ctx.lineWidth=2;ctx.stroke();
   ctx.restore();
-  if(o.slowT>0){ctx.fillStyle='rgba(120,190,255,.42)';ctx.beginPath();ctx.arc(0,0,r+1,0,TAU);ctx.fill();}   // slowed: a cold blue tint
   ctx.fillStyle='rgba(255,255,255,.25)';ctx.beginPath();ctx.ellipse(-r*.3,-r*.5,r*.36,r*.18,-.5,0,TAU);ctx.fill();
   let lx=o.look?o.look[0]:ball.x-o.x,ly=o.look?o.look[1]:ball.y-o.y;const lm=Math.hypot(lx,ly)||1;lx/=lm;ly/=lm;
   const ex=r*.38,eyy=-r*.1+ly*r*.08,cx=lx*r*.16;
@@ -1326,18 +1225,7 @@ function draw(){
   drawPool();
   for(const p of parts){const k=clamp(p.life/p.max,0,1);ctx.globalAlpha=k;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.grow?p.size*(2.2-1.2*k):p.size*(.4+.6*k),0,TAU);ctx.fill();}
   ctx.globalAlpha=1;
-  for(const o of octos)if(o.magT>0){                    // a magnet power: dashed pull line to the ball
-    ctx.strokeStyle='rgba(255,215,94,.6)';ctx.lineWidth=3;ctx.setLineDash([6,9]);ctx.lineDashOffset=T*70;
-    ctx.beginPath();ctx.moveTo(ball.x,ball.y);ctx.lineTo(o.x,o.y);ctx.stroke();ctx.setLineDash([]);
-  }
   drawBubble();drawBall();octos.forEach(drawOcto);
-  if(!demo)for(let i=0;i<2;i++){                        // power names and meters along the sand
-    const o=octos[i],full=o.pw>=100,x=i?WR-CH-8:WL+CH+8,w=120,bx=i?x-w:x;
-    const human=GUEST?i===1:(i===0||mode===2),key=!human?'':coarse?'tap Power':mode===2&&i===1?'press right Shift':'press E';
-    label(powerOf(o).name+(full?(key?' ready, '+key:' ready'):''),x,BOT+11,15,full?GOLD:FOAM,i?'right':'left');
-    ctx.fillStyle='rgba(4,34,44,.6)';ctx.fillRect(bx,BOT+22,w,6);
-    const f=w*clamp(o.pw/100,0,1);ctx.fillStyle=full?GOLD:(i?VIOLET:CORAL);ctx.fillRect(i?bx+w-f:bx,BOT+22,f,6);
-  }
   for(const t of texts){ctx.globalAlpha=clamp(t.t*2.5,0,1);label(t.text,t.x,t.y,24,t.color);}
   ctx.globalAlpha=1;
   if(state==='countdown'&&!demo&&mode!==2){const me=octos[GUEST?1:0];label('YOU',me.x,me.y-me.r-22,22,GOLD);}
@@ -1360,15 +1248,15 @@ function fit(){
 if(window.ResizeObserver)new ResizeObserver(fit).observe(cv);else addEventListener('resize',fit);
 fit();
 
-const GAMEKEYS=new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','Enter','NumpadEnter','Slash','KeyW','KeyA','KeyS','KeyD','KeyF','KeyE','KeyQ','KeyX','Period']);
+const GAMEKEYS=new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','Enter','NumpadEnter','Slash','KeyW','KeyA','KeyS','KeyD','KeyF']);
 addEventListener('keydown',e=>{
   if(e.target&&e.target.tagName==='INPUT')return;
   if(e.code==='KeyP'||e.code==='Escape'){if(state==='paused')resume();else pause();return;}
-  keys[e.code]=true;latch[e.code]=true;
+  keys[e.code]=true;
   if(!demo&&state!=='over'&&state!=='paused'&&GAMEKEYS.has(e.code))e.preventDefault();
 });
 addEventListener('keyup',e=>{keys[e.code]=false;});
-addEventListener('blur',()=>{for(const k in keys)keys[k]=false;clearLatch();});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 
 const stick=$('stick'),knob=$('knob');let stickOn=false;
@@ -1385,10 +1273,7 @@ stick.addEventListener('pointermove',e=>{if(stickOn)stickMove(e);});
 const tDash=$('tDash');
 tDash.addEventListener('pointerdown',e=>{e.preventDefault();touch.dash=true;tDash.classList.add('on');});
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>tDash.addEventListener(ev,()=>{touch.dash=false;tDash.classList.remove('on');}));
-const tPower=$('tPower');
-tPower.addEventListener('pointerdown',e=>{e.preventDefault();touch.pow=true;tPower.classList.add('on');});
-['pointerup','pointercancel','pointerleave'].forEach(ev=>tPower.addEventListener(ev,()=>{touch.pow=false;tPower.classList.remove('on');}));
-[stick,tDash,tPower].forEach(el=>el.addEventListener('contextmenu',e=>e.preventDefault()));
+[stick,tDash].forEach(el=>el.addEventListener('contextmenu',e=>e.preventDefault()));
 
 function press(group,attr,val){document.querySelectorAll(group+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[attr]===String(val))));}
 const MODEVIEW={4:'vMenu',1:'vQuick',2:'vLocal',3:'vOnline'};
@@ -1427,9 +1312,7 @@ function tileDraw(cvs,skin,owned){
 function skinInfo(sk,own){
   const p=$('skinInfo');p.textContent='';
   const b=document.createElement('strong');b.className='rar'+sk.rar;b.textContent=own?sk.name:'Locked';p.appendChild(b);
-  p.appendChild(document.createTextNode(', '+RAR[sk.rar]+(own?(save.skin===sk.id?', equipped':''):', found in chests')));
-  p.appendChild(document.createElement('br'));
-  p.appendChild(document.createTextNode(own?sk.pow.name+': '+sk.pow.desc:'Power: '+sk.pow.name));
+  p.appendChild(document.createTextNode(' \u00b7 '+RAR[sk.rar]+(own?(save.skin===sk.id?' \u00b7 equipped':''):' \u00b7 found in chests')));
 }
 function buildSkins(){
   const g=$('skinGrid');g.textContent='';
@@ -1480,7 +1363,7 @@ function awardChest(){
 function revealChest(){
   const sk=chest.skin,p=$('chestMsg');p.textContent=chest.isNew?'New skin: ':'Duplicate: ';
   const b=document.createElement('strong');b.className='rar'+sk.rar;b.textContent=sk.name;p.appendChild(b);
-  p.appendChild(document.createTextNode(', '+RAR[sk.rar]+(chest.isNew?'. Power: '+sk.pow.name+'.':'. You already have it, so nothing new this time.')));
+  p.appendChild(document.createTextNode(' \u00b7 '+RAR[sk.rar]+(chest.isNew?'':'. You already have it, so nothing new this time.')));
   const more=run.opp<save.unlocked-1&&run.opp<LADDER.length-1;
   $('btnNextOpp').textContent=more?'Next: '+LADDER[run.opp+1].name:'Play again';$('btnNextOpp').hidden=false;
   $('btnEquip').hidden=!chest.isNew;$('btnEquip').disabled=false;$('btnEquip').textContent='Equip';
@@ -1568,14 +1451,13 @@ function readInvite(){
 readInvite();addEventListener('hashchange',readInvite);
 
 // small hook for testing in the browser console
-window.__pp=()=>({pw:octos.map(o=>Math.round(o.pw)),power:octos.map(o=>powerOf(o).name),fx:octos.map(o=>({spd:o.spdT>0,shield:o.shieldT>0,slow:o.slowT>0,mag:o.magT>0,ghost:o.ghostT>0,big:o.bigT>0,turbo:o.turboT>0,stun:o.stunT>0})),hot:ball.hotT>0,state,score:score.slice(),time,demo,mode,map:MAP.name,ballType:BALL.id,skins:octos.map(o=>o.skin?(o.skin.id||'opponent'):null),opp:run.opp,save:JSON.parse(JSON.stringify(save)),role:net.role,on:net.on,ping:net.ping||0,
+window.__pp=()=>({state,score:score.slice(),time,demo,mode,map:MAP.name,ballType:BALL.id,skins:octos.map(o=>o.skin?(o.skin.id||'opponent'):null),opp:run.opp,save:JSON.parse(JSON.stringify(save)),role:net.role,on:net.on,ping:net.ping||0,
   ball:[ball.x,ball.y],octos:octos.map(o=>[o.x,o.y,o.charges]),code:net.code||null,corr:objs.map(o=>Math.round(Math.hypot(o.ex,o.ey)*10)/10)});
 
 let last=0;
 function frame(t){
   const dt=Math.min(.05,(t-last)/1000||0);last=t;
   tick(dt);draw();
-  tPower.classList.toggle('ready',!demo&&octos[GUEST?1:0].pw>=100);
   if(!$('vChest').hidden)drawChest(dt);
   else if(!$('vSkins').hidden&&!$('skinGrid').hidden)$('skinGrid').querySelectorAll('button').forEach(b=>b._draw&&b._draw());   // keeps animated skins moving
   requestAnimationFrame(frame);
