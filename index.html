@@ -36,7 +36,8 @@ body{
   color:var(--foam);font-family:var(--body);font-size:16px;font-weight:600;line-height:1.45;
   padding-inline:16px;padding-block:14px 28px;
 }
-.wrap{max-width:max(288px,min(1100px,calc((100vh - 260px)*2)));margin-inline:auto;display:grid;gap:14px}
+:root{--wrapw:max(288px,min(1100px,calc((100vh - 260px)*2)))}
+.wrap{max-width:var(--wrapw);margin-inline:auto;display:grid;gap:14px}
 
 .board{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
 .team{display:flex;align-items:baseline;gap:12px;min-width:0}
@@ -98,6 +99,12 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
 .ad-slot ins[data-ad-status="unfilled"]{display:none!important}
 .ad-slot::before{content:none}
 .ad-slot:has(ins[data-ad-status="filled"])::before{content:"Advertisement";display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+/* side ads: wide screens only, kept 150px clear of the game (ad networks forbid ads close to game controls) */
+.rail{position:absolute;width:160px;height:600px;overflow:hidden}
+.rail.left{right:calc(50% + var(--wrapw)/2 + 150px)}
+.rail.right{left:calc(50% + var(--wrapw)/2 + 150px)}
+.rail ins{display:inline-block;width:160px;height:600px}
+.rail ins[data-ad-status="unfilled"]{display:none!important}
 .site{max-width:1100px;margin:26px auto 0;color:var(--muted);font-size:.88rem;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
 .site p{margin:0;max-width:70ch}
 .site a{color:var(--foam)}
@@ -186,6 +193,10 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7905471716558332" data-ad-slot="2335261472" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
+
+<!-- AdSense units "Puffer Polo left rail" and "Puffer Polo right rail". The script at the end of the page shows and loads them only when the window is wide enough. -->
+<aside class="rail left" id="rail-left" aria-label="Advertisement" hidden><ins class="adsbygoogle" data-ad-client="ca-pub-7905471716558332" data-ad-slot="8098724043"></ins></aside>
+<aside class="rail right" id="rail-right" aria-label="Advertisement" hidden><ins class="adsbygoogle" data-ad-client="ca-pub-7905471716558332" data-ad-slot="6785642375"></ins></aside>
 
 <footer class="site">
   <p>Puffer Polo is a free two-player browser game. Matches last two minutes; if the score is level, the next goal wins.</p>
@@ -1032,6 +1043,24 @@ function frame(t){
 }
 kickoff();
 requestAnimationFrame(frame);
+})();
+</script>
+<script>
+/* Side ads: show them only when there is room for a 160px ad plus a 150px gap on each side of the game, and never on touch screens. */
+(function(){
+  var rails=[document.getElementById('rail-left'),document.getElementById('rail-right')],
+      wrap=document.querySelector('.wrap'),stage=document.querySelector('.stage'),loaded=false;
+  function place(){
+    var touch=window.matchMedia&&matchMedia('(pointer:coarse)').matches;
+    var room=!touch&&window.innerWidth>=wrap.offsetWidth+2*(150+160);
+    var top=stage.getBoundingClientRect().top+window.scrollY;
+    rails.forEach(function(r){r.hidden=!room;r.style.top=top+'px';});
+    if(room&&!loaded){
+      loaded=true;
+      rails.forEach(function(){try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}});
+    }
+  }
+  place();addEventListener('resize',place);addEventListener('load',place);
 })();
 </script>
 </body>
