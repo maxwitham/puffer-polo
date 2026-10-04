@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Who Loves Who More</title>
-<meta name="description" content="A guessing game for two people in two places. One of you answers a yes or no question, the other guesses. Join each other with a 4-letter code.">
+<meta name="description" content="A guessing game for two people in two places. One of you slides to an honest answer from 1 to 10, the other guesses, and closer guesses score more. Join each other with a 4-letter code.">
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
 <style>
@@ -67,6 +67,27 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);f
 .q{font-family:var(--display);font-weight:800;font-size:clamp(1.55rem,6.6vw,2.1rem);line-height:1.08;letter-spacing:-.015em;margin:0;text-wrap:balance;overflow-wrap:anywhere}
 .prompt{color:var(--muted)}
 
+.me-a{--me:var(--red)} .me-b{--me:var(--blue)}
+.slide{display:flex;flex-direction:column;gap:.5rem}
+.slide .val{font-family:var(--display);font-weight:800;font-size:3.6rem;line-height:1;text-align:center;font-variant-numeric:tabular-nums;color:var(--me)}
+.slide .val small{font-family:var(--body);font-size:1rem;font-weight:500;color:var(--muted)}
+input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:2.75rem;margin:0;background:transparent;cursor:pointer;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:.7rem;border-radius:99px;background:var(--line)}
+input[type=range]::-moz-range-track{height:.7rem;border-radius:99px;background:var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:2.2rem;height:2.2rem;margin-top:-.75rem;border-radius:50%;background:var(--me);border:3px solid var(--card);box-shadow:0 0 0 2px var(--ink)}
+input[type=range]::-moz-range-thumb{width:1.8rem;height:1.8rem;border-radius:50%;background:var(--me);border:3px solid var(--card);box-shadow:0 0 0 2px var(--ink)}
+input[type=range]:disabled{opacity:.5;cursor:not-allowed}
+.ticks{display:flex;justify-content:space-between;padding-inline:.35rem;font-family:var(--mono);font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ticks span{width:1.5rem;text-align:center}
+.ends{display:flex;justify-content:space-between;gap:1rem;font-size:.85rem;color:var(--muted);margin-bottom:.4rem}
+.ends span:last-child{text-align:right}
+.scale{position:relative;height:5.4rem;margin-inline:1rem}
+.scale .bar{position:absolute;left:0;right:0;top:50%;height:.5rem;margin-top:-.25rem;border-radius:99px;background:var(--line)}
+.scale .gap{position:absolute;top:50%;height:.5rem;margin-top:-.25rem;background:var(--muted)}
+.pin{position:absolute;transform:translateX(-50%)}
+.pin.top{bottom:calc(50% + .45rem)} .pin.bot{top:calc(50% + .45rem)}
+.pin b{display:grid;place-content:center;width:2rem;height:2rem;border-radius:50%;background:var(--me);color:var(--on-accent);font-family:var(--display);font-weight:800;font-size:1rem;font-variant-numeric:tabular-nums}
+.pair b{color:var(--me,inherit)}
 .yn{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 button{font:inherit;color:inherit;cursor:pointer}
 button:disabled{cursor:not-allowed;opacity:.5}
@@ -145,94 +166,105 @@ input.code{font-family:var(--mono);letter-spacing:.04em}
 (function(){
 "use strict";
 var BANK=[
-"Does {n} dance when nobody's watching?",
-"Does {n} sing in the shower like it's a concert?",
-"Does {n} talk to themselves when they're alone?",
-"Has {n} ever practised an argument with {o} in the shower?",
-"Does {n} have a playlist they'd be embarrassed for {o} to see?",
-"Has {n} ever scrolled all the way back through {o}'s old photos?",
-"Does {n} re-read old messages from {o} just to smile?",
-"Has {n} ever screenshotted a message from {o} to show a friend?",
-"Does {n} have a favourite photo of {o} that {o} hates?",
-"Has {n} ever pretended to be asleep to get out of something?",
-"Has {n} ever fallen asleep on a video call with {o}?",
-"Has {n} ever cried at an ad?",
-"Does {n} do voices for animals?",
-"Has {n} ever waved back at someone who wasn't waving at them?",
-"Does {n} check themselves out in shop windows?",
-"Has {n} ever laughed at a message from {o} so hard that someone asked what was funny?",
-"Does {n} have a nickname for {o} that nobody else knows?",
-"Would {n} let {o} cut their hair?",
-"Would {n} hand {o} their unlocked phone right now?",
-"Does {n} think they're the funnier one?",
-"Does {n} think they're the better kisser?",
-"Does {n} think they said \"I love you\" first?",
-"Has {n} ever eaten something off the floor when nobody was looking?",
-"Has {n} ever practised what to say before calling {o}?",
-"Did {n} look {o} up online before the first date?",
-"Has {n} ever sent {o} a message and then stared at the phone waiting?",
-"Does {n} have an outfit they wear because {o} likes it?",
-"Does {n} hog the blanket?",
-"Does {n} talk in their sleep?",
-"Has {n} ever woken up annoyed at {o} because of a dream?",
-"Has {n} ever pretended to like a present from {o}?",
-"Has {n} ever pretended to have seen a movie to sound cool?",
-"Does {n} still get butterflies before seeing {o}?",
-"Does {n} keep a countdown to the next visit?",
-"Has {n} ever worn something of {o}'s to feel closer?",
-"Has {n} ever hugged a pillow and pretended it was {o}?",
-"Has {n} ever got the time difference wrong and messaged {o} at 3am?",
-"Does {n} have a celebrity crush {o} doesn't know about?",
-"Would {n} survive a week without their phone?",
-"Has {n} ever teared up after hanging up on a call with {o}?",
-"Does {n} do a little dance when the food arrives?",
-"Does {n} finish the snacks before the movie starts?",
-"Does {n} laugh at their own jokes before the punchline?",
-"Has {n} ever blamed a fart on someone else?",
-"Has {n} ever sung into a hairbrush?",
-"Does {n} have whole conversations with {o} in their head?",
-"Has {n} ever written their name next to {o}'s just to see how it looks?",
-"Has {n} ever pictured growing old with {o}?",
-"Has {n} already picked a name for a pet the two of you don't have?",
-"Does {n} tell their friends too much about {o}?",
-"Has {n} ever shown a stranger a photo of {o} just to brag?",
-"Does {n} have a voice they use when imitating {o}?",
-"Would {n} give {o} the last bite of dessert?",
-"Is {n} secretly ticklish?",
-"Has {n} ever typed a long message to {o} and then deleted it?",
-"Has {n} ever kissed the phone screen during a call with {o}?",
-"Does {n} smile at their phone in public when {o} messages?",
-"Has {n} ever missed their stop because they were texting {o}?",
-"Does {n} have a song that always makes them think of {o}?",
-"Would {n} do karaoke sober?",
-"Has {n} given a name to their car, a plant or a gadget?",
-"Has {n} ever tripped in public and pretended it was on purpose?",
-"Does {n} practise facial expressions in the mirror?",
-"Has {n} ever taken more than twenty selfies to get one good one?",
-"Does {n} think they're a better driver than {o}?",
-"Does {n} think they'd beat {o} in an arm wrestle?",
-"Has {n} ever let {o} win on purpose?",
-"Would {n} eat {o}'s leftovers without asking?",
-"Has {n} ever said \"five minutes away\" while still at home?",
-"Has {n} ever fake-laughed at one of {o}'s jokes?",
-"Has {n} rewatched the same comfort show more than three times?",
-"Does {n} still sleep with a soft toy?",
-"Is {n} a tiny bit scared of the dark?",
-"Has {n} ever looked up flights to see {o} on a random weeknight?",
-"Does {n} know {o}'s coffee order by heart?",
-"Has {n} ever said goodnight to {o} and then stayed up for another hour?",
-"Does {n} stay on the call just to listen to {o} fall asleep?",
-"Has {n} ever bought something only because it reminded them of {o}?",
-"Does {n} get hangry and blame it on something else?",
-"Has {n} ever started a silly argument with {o} just for the attention?"
+"How much does {n} like cats?",
+"How much does {n} miss {o} right now?",
+"How much does {n} love pineapple on pizza?",
+"How much does {n} enjoy being the little spoon?",
+"How much does {n} like surprises?",
+"How much does {n} hate being tickled?",
+"How much does {n} like {o}'s taste in music?",
+"How much does {n} like {o}'s cooking?",
+"How much does {n} trust {o} to pick the movie?",
+"How much does {n} like sharing food?",
+"How much does {n} care what strangers think of them?",
+"How much does {n} love a day of doing absolutely nothing?",
+"How much does {n} like scary movies?",
+"How much does {n} like dancing in public?",
+"How much does {n} believe in love at first sight?",
+"How much does {n} believe in star signs?",
+"How much does {n} like mornings?",
+"How much does {n} want a dog?",
+"How much does {n} like long phone calls?",
+"How much does {n} like being the centre of attention?",
+"How much does {n} think about {o} during the day?",
+"How much does {n} enjoy winning an argument with {o}?",
+"How much does {n} like holding hands in public?",
+"How much does {n} secretly like romantic comedies?",
+"How much does {n} like spicy food?",
+"How much would {n} hate a week with no phone?",
+"How much does {n} like getting good-morning texts?",
+"How much does {n} like {o}'s laugh?",
+"How much does {n} want to travel the world?",
+"How much does {n} like Vegemite?",
+"How much does {n} like camping?",
+"How much does {n} love their own bed?",
+"How much does {n} overthink a text before sending it to {o}?",
+"How much does {n} like having their photo taken?",
+"How much does {n} like it when {o} steals their hoodie?",
+"How ticklish is {n}?",
+"How jealous is {n} when someone flirts with {o}?",
+"How competitive is {n} at board games?",
+"How stubborn is {n} in an argument?",
+"How romantic is {n}?",
+"How clingy is {n} after a long time apart?",
+"How grumpy is {n} before breakfast?",
+"How dramatic is {n} when they're sick?",
+"How messy is {n}'s bedroom right now?",
+"How scared is {n} of spiders?",
+"How funny does {n} think they are?",
+"How picky is {n} about food?",
+"How patient is {n} when {o} takes ages to reply?",
+"How nosy is {n}?",
+"How cuddly is {n}?",
+"How embarrassing is {n}'s search history?",
+"How excited is {n} for the next visit?",
+"How proud is {n} of {o}?",
+"How weird are {n}'s dreams?",
+"How loud is {n} when they sneeze?",
+"How hungry is {n} right now?",
+"How good is {n} at cooking?",
+"How good is {n} at keeping a secret?",
+"How good is {n} at singing?",
+"How good is {n} at dancing?",
+"How good is {n} at choosing presents?",
+"How good is {n} at remembering anniversaries?",
+"How good a kisser does {n} think they are?",
+"How good is {n} at hiding it when they're upset?",
+"How good is {n} with directions?",
+"How good is {n} at replying to messages quickly?",
+"How good would {n} be in a zombie apocalypse?",
+"How good is {n} at telling when {o} is upset?",
+"How good is {n} at saying sorry first?",
+"How likely is {n} to cry at a movie?",
+"How likely is {n} to fall asleep on a video call with {o}?",
+"How likely is {n} to eat {o}'s leftovers without asking?",
+"How likely is {n} to book a flight to see {o} on a whim?",
+"How likely is {n} to laugh at the wrong moment?",
+"How likely is {n} to say \"I'm fine\" when they're not?",
+"How likely is {n} to steal the blanket?",
+"How likely is {n} to text first after an argument with {o}?",
+"How likely is {n} to say hello to a dog before its owner?",
+"How likely is {n} to be late?",
+"How likely is {n} to dance when nobody's watching?",
+"How likely is {n} to sing in the shower?",
+"How likely is {n} to blame a fart on someone else?",
+"How likely is {n} to do karaoke sober?",
+"How often does {n} re-read old messages from {o}?",
+"How often does {n} talk about {o} to their friends?",
+"How often does {n} check their phone hoping it's {o}?",
+"How often does {n} talk to themselves?",
+"How often does {n} laugh at their own jokes?",
+"How often does {n} hit snooze?",
+"How often does {n} smile at their phone because of {o}?"
 ];
 var PH=["answer","guess","reveal","done"];
-var A32="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", ROOM="BCDFGHJKLMNPQRSTVWXZ", KEY="orange", SK="wlwm-session-2", WIRE_V=3;
+var A32="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", ROOM="BCDFGHJKLMNPQRSTVWXZ", KEY="orange", SK="wlwm-session-3", WIRE_V=4, MAXPTS=5;
 
 var app=document.getElementById("app");
 var net=null, partnerHere=false, joinTimer=null, liveErr="", resuming=false;
 var mode=null, room="", createdRoom="", game=null, seat=null;
 var busy=false, flash="", confirmLeave=false, customOpen=false, customText="", copied="", replyCode="";
+var pick=5, pickKey="";
 var form={tab:"start",a:"",b:"",each:5,mode:"live",code:""};
 
 function h(tag,attrs){
@@ -275,9 +307,19 @@ function qText(g,q,round){
   var s=subjectOf(g,round), N=g.names[s], O=g.names[other(s)];
   return BANK[q%BANK.length].replace(/\{([no])\}/g,function(_,k){return k==="n"?N:O;});
 }
+function points(t,g){return Math.max(0,MAXPTS-Math.abs(t-g));}   // spot on is 5, one away is 4, and so on down to 0
+function ends(text){                                              // what 1 and 10 mean for this question
+  var t=String(text).toLowerCase();
+  if(/^how much/.test(t)) return ["Not at all","So much"];
+  if(/^how good/.test(t)) return ["Hopeless","Brilliant"];
+  if(/^how likely/.test(t)) return ["No chance","Definitely"];
+  if(/^how often/.test(t)) return ["Never","All the time"];
+  if(/^how /.test(t)) return ["Not at all","Extremely"];
+  return ["Lowest","Highest"];
+}
 function scores(g){
   var sc={a:0,b:0};
-  g.history.forEach(function(e,i){if(e.t===e.g) sc[other(subjectOf(g,i))]++;});
+  g.history.forEach(function(e,i){sc[other(subjectOf(g,i))]+=points(e.t,e.g);});
   return sc;
 }
 function newGame(names,total,first){
@@ -287,15 +329,15 @@ function newGame(names,total,first){
 function norm(d){
   if(!d||typeof d!=="object") return null;
   var nm=function(x){return String(x==null?"":x).trim().slice(0,24);};
-  var bool=function(x){return x===true||x===false?x:null;};
+  var num=function(x){x=Math.round(Number(x));return x>=1&&x<=10?x:null;};
   var qn=function(q){return typeof q==="number"?Math.abs(q|0)%BANK.length:String(q==null?"":q).slice(0,120);};
   var names={a:nm(d.names&&d.names.a)||"Player one",b:nm(d.names&&d.names.b)||"Player two"};
   var total=Math.min(30,Math.max(2,(Number(d.total)|0)||10)); if(total%2) total++;
   var seed=((Number(d.seed)||1)>>>0)||1;
-  var history=Array.isArray(d.history)?d.history.slice(0,total).map(function(e){e=e||{};return {q:qn(e.q),t:!!e.t,g:!!e.g};}):[];
+  var history=Array.isArray(d.history)?d.history.slice(0,total).map(function(e){e=e||{};return {q:qn(e.q),t:num(e.t)||5,g:num(e.g)||5};}):[];
   var phase=PH.indexOf(d.phase)>=0?d.phase:"answer";
   var cur=qn(d.cur); if(cur==="") cur=deck(seed)[0];
-  var truth=bool(d.truth), guess=bool(d.guess);
+  var truth=num(d.truth), guess=num(d.guess);
   if(phase==="guess"&&truth===null) phase="answer";
   if(phase==="reveal"&&(truth===null||guess===null)) phase="answer";
   return {pid:String(d.pid||"x").slice(0,12),names:names,total:total,first:d.first==="b"?"b":"a",seed:seed,ptr:Math.max(1,Number(d.ptr)|0),
@@ -304,15 +346,13 @@ function norm(d){
 
 /* ---- the whole game as one small list: what live play shares, and what a text code carries ---- */
 function wire(g){
-  var b3=function(v){return v===null?-1:v?1:0;};
-  return [WIRE_V,g.pid,g.names.a,g.names.b,g.total,g.first==="a"?0:1,g.seed,g.ptr,g.round,PH.indexOf(g.phase),g.cur,b3(g.truth),b3(g.guess),
-    g.history.map(function(e){return typeof e.q==="number"?e.q*4+(e.t?2:0)+(e.g?1:0):[e.q,e.t?1:0,e.g?1:0];}),g.rev];
+  return [WIRE_V,g.pid,g.names.a,g.names.b,g.total,g.first==="a"?0:1,g.seed,g.ptr,g.round,PH.indexOf(g.phase),g.cur,g.truth||0,g.guess||0,
+    g.history.map(function(e){return typeof e.q==="number"?e.q*100+(e.t-1)*10+(e.g-1):[e.q,e.t,e.g];}),g.rev];
 }
 function fromWire(a){
   if(!Array.isArray(a)||a[0]!==WIRE_V) return null;
-  var u3=function(v){return v===1?true:v===0?false:null;};
-  return norm({pid:a[1],names:{a:a[2],b:a[3]},total:a[4],first:a[5]?"b":"a",seed:a[6],ptr:a[7],round:a[8],phase:PH[a[9]],cur:a[10],truth:u3(a[11]),guess:u3(a[12]),
-    history:(Array.isArray(a[13])?a[13]:[]).map(function(e){return typeof e==="number"?{q:e>>2,t:!!(e&2),g:!!(e&1)}:{q:e&&e[0],t:!!(e&&e[1]),g:!!(e&&e[2])};}),rev:a[14]});
+  return norm({pid:a[1],names:{a:a[2],b:a[3]},total:a[4],first:a[5]?"b":"a",seed:a[6],ptr:a[7],round:a[8],phase:PH[a[9]],cur:a[10],truth:a[11],guess:a[12],
+    history:(Array.isArray(a[13])?a[13]:[]).map(function(e){return typeof e==="number"?{q:Math.floor(e/100),t:Math.floor(e%100/10)+1,g:e%10+1}:{q:e&&e[0],t:e&&e[1],g:e&&e[2]};}),rev:a[14]});
 }
 function keyOf(g){return JSON.stringify(wire(g));}
 function newer(a,b){return a.rev>b.rev||(a.rev===b.rev&&keyOf(a)>keyOf(b));}
@@ -550,7 +590,7 @@ function answer(v){commit({truth:v,phase:"guess"});}
 function swapQuestion(){commit({cur:dealIdx(game,game.ptr),ptr:game.ptr+1});}
 function useCustom(){
   var t=customText.trim().slice(0,80);
-  if(t.length<4){flash="Write a yes or no question first.";render();return;}
+  if(t.length<4){flash="Write a question that can be answered from 1 to 10.";render();return;}
   if(!/\?$/.test(t)) t+="?";
   flash=""; customOpen=false; customText=""; commit({cur:t});
 }
@@ -586,14 +626,14 @@ function heart(left){
   p.setAttribute("stroke-linejoin","round"); svg.append(p); return svg;
 }
 function scoreboard(){
-  var sc=scores(game), pct=Math.round(100*(sc.a+1)/(sc.a+sc.b+2));
+  var sc=scores(game), pct=Math.round(100*(sc.a+4)/(sc.a+sc.b+8));
   pct=Math.min(88,Math.max(12,pct));
   var bar=h("i",{}); bar.style.width=pct+"%";
   return h("section",{class:"score","aria-label":"Score"},
     h("div",{class:"side a"},h("span",{class:"pts"},sc.a),h("span",{class:"nm"},game.names.a)),
     h("div",{class:"side b"},h("span",{class:"nm"},game.names.b),h("span",{class:"pts"},sc.b)),
     h("div",{class:"tug"},bar,heart(pct)),
-    h("p",{class:"cap"},"A point each time you guess the other one right."));
+    h("p",{class:"cap"},"Up to 5 points a question. The closer your guess, the more you get."));
 }
 function letter(s,num,total,text,body){
   return h("section",{class:"letter"},h("div",{class:"inner"},
@@ -603,10 +643,31 @@ function letter(s,num,total,text,body){
     h("h2",{class:"q"},text),
     body));
 }
-function yesNo(fn,off){
-  return h("div",{class:"yn"},
-    h("button",{type:"button",id:"btn-yes",disabled:off,onclick:function(){fn(true);}},"Yes"),
-    h("button",{type:"button",id:"btn-no",disabled:off,onclick:function(){fn(false);}},"No"));
+function slider(who,text,btn,fn,off){
+  var lab=ends(text), val=h("span",{id:"pick-val"},pick), ticks=[], i;
+  for(i=1;i<=10;i++) ticks.push(h("span",{},i));
+  var input=h("input",{type:"range",id:"pick",min:"1",max:"10",step:"1",disabled:off,"aria-label":"Your answer from 1 to 10",
+    oninput:function(e){pick=Math.min(10,Math.max(1,Number(e.target.value)||5));val.textContent=pick;}});
+  input.value=String(pick);
+  return h("div",{class:"slide me-"+who},
+    h("p",{class:"val"},val,h("small",{}," / 10")),
+    input,
+    h("div",{class:"ticks","aria-hidden":"true"},ticks),
+    h("div",{class:"ends"},h("span",{},"1 = "+lab[0]),h("span",{},"10 = "+lab[1])),
+    h("button",{type:"button",class:"btn wide",id:"btn-lock",disabled:off,onclick:function(){fn(pick);}},btn));
+}
+function pos(v){return ((v-1)/9*100)+"%";}
+function scale(s,t,gs,g){                                         // the 1 to 10 line with both picks on it
+  var lo=Math.min(t,g), hi=Math.max(t,g);
+  var gap=h("i",{class:"gap"}); gap.style.left=pos(lo); gap.style.width=((hi-lo)/9*100)+"%";
+  var top=h("span",{class:"pin top me-"+s},h("b",{},t)); top.style.left=pos(t);
+  var bot=h("span",{class:"pin bot me-"+gs},h("b",{},g)); bot.style.left=pos(g);
+  return h("div",{class:"scale",role:"img","aria-label":"Answer "+t+", guess "+g+", on a line from 1 to 10"},h("i",{class:"bar"}),gap,top,bot);
+}
+function verdict(t,g,G){
+  var d=Math.abs(t-g), p=points(t,g);
+  if(d===0) return "Spot on. "+p+" points for "+G+".";
+  return d+" away. "+(p?p+(p===1?" point":" points")+" for "+G+".":"No points for "+G+" this time.");
 }
 function waiting(text){return h("p",{class:"wait"},h("span",{class:"dot"}),text);}
 function replyForm(label){
@@ -673,9 +734,9 @@ function vLobby(){
     :h("p",{class:"muted small"},"Live play didn't load, so you'll text each other a code after each turn. Reload the page to try live again.");
   return [tabs,
     h("ol",{class:"steps"},
-      h("li",{},"The game asks a yes or no question about one of you."),
-      h("li",{},"That person answers honestly. The other one guesses."),
-      h("li",{},"A right guess is a point. Most points loves more.")),
+      h("li",{},"The game asks a how-much question about one of you."),
+      h("li",{},"That person slides to their honest answer from 1 to 10. The other one guesses."),
+      h("li",{},"The closer the guess, the more points, up to 5. Most points loves more.")),
     h("form",{class:"panel",id:"setup",onsubmit:function(e){e.preventDefault();startGame();}},
       h("div",{class:"fields"},
         h("div",{class:"field"},h("label",{for:"name-a"},"Your name"),
@@ -702,14 +763,16 @@ function vWho(){
 }
 function vPlay(){
   var g=game, s=subjectOf(g,g.round), gs=other(s), mine=seat===s, swap=mode==="swap", num=g.round+1, body, out=[];
-  var S=g.names[s], G=g.names[gs], text=qText(g,g.cur,g.round), stuck=!swap&&!canPlayLive(), off=busy||stuck;
+  var S=g.names[s], G=g.names[gs], text=qText(g,g.cur,g.round), off=busy;
+  var key=g.pid+":"+g.rev+":"+g.round+":"+g.phase;
+  if(key!==pickKey){pickKey=key;pick=5;}
   if(g.phase==="answer"){
     if(mine){
-      body=[h("p",{class:"prompt"},"Answer honestly. "+G+" sees it only after guessing."),yesNo(answer,off)];
+      body=[h("p",{class:"prompt"},"Slide to your honest answer. "+G+" sees it only after guessing."),slider(seat,text,"Lock in my answer",answer,off)];
       if(customOpen){
         body.push(h("form",{class:"panel",id:"custom",onsubmit:function(e){e.preventDefault();useCustom();}},
-          h("div",{class:"field"},h("label",{for:"custom-q"},"Your own yes or no question about "+S),
-            h("input",{type:"text",id:"custom-q",maxlength:"80",autocomplete:"off",placeholder:"Does "+S+" like...",value:customText,oninput:function(e){customText=e.target.value;}})),
+          h("div",{class:"field"},h("label",{for:"custom-q"},"Your own question about "+S+", answered from 1 to 10"),
+            h("input",{type:"text",id:"custom-q",maxlength:"80",autocomplete:"off",placeholder:"How much does "+S+" like...",value:customText,oninput:function(e){customText=e.target.value;}})),
           h("div",{class:"row"},
             h("button",{type:"submit",class:"btn",id:"btn-custom-use",disabled:off},"Use this question"),
             h("button",{type:"button",class:"link",id:"btn-custom-cancel",onclick:function(){customOpen=false;render();}},"Cancel"))));
@@ -722,19 +785,20 @@ function vPlay(){
   } else if(g.phase==="guess"){
     if(mine) body=swap?h("p",{class:"prompt"},"Your answer is locked in. "+G+" guesses next."):waiting("Your answer is locked in. Waiting for "+G+" to guess.");
     else{
-      body=[h("p",{class:"prompt"},S+" has answered. What did "+S+" say?"),yesNo(guess,off)];
+      body=[h("p",{class:"prompt"},S+" has answered. Where did "+S+" put the slider?"),slider(seat,text,"Lock in my guess",guess,off)];
       if(swap&&g.history.length){
-        var e=g.history[g.history.length-1], ok=e.t===e.g;
-        out.push(h("p",{class:"note"},"Last question: you said "+yn(e.t)+" and "+S+" guessed "+yn(e.g)+". "+(ok?"A point for "+S+".":"No point for "+S+".")));
+        var e=g.history[g.history.length-1], p=points(e.t,e.g);
+        out.push(h("p",{class:"note"},"Last question: you said "+e.t+" and "+S+" guessed "+e.g+". "+(p?p+(p===1?" point":" points")+" for "+S+".":"No points for "+S+".")));
       }
     }
   } else {
-    var right=g.guess===g.truth, last=g.round+1>=g.total;
+    var last=g.round+1>=g.total;
     body=[
+      scale(s,g.truth,gs,g.guess),
       h("div",{class:"pairs"},
-        h("div",{class:"pair"},h("span",{},S+" said"),h("b",{},yn(g.truth))),
-        h("div",{class:"pair"},h("span",{},G+" guessed"),h("b",{},yn(g.guess)))),
-      h("p",{class:"verdict"},right?"Right. A point for "+G+".":"Wrong. No point for "+G+" this time."),
+        h("div",{class:"pair me-"+s},h("span",{},S+" said"),h("b",{},g.truth)),
+        h("div",{class:"pair me-"+gs},h("span",{},G+" guessed"),h("b",{},g.guess))),
+      h("p",{class:"verdict"},verdict(g.truth,g.guess,G)),
       (!swap||seat===gs)?h("button",{type:"button",class:"btn",id:"btn-next",disabled:off,onclick:nextQuestion},last?"See who loves who more":(swap?"Next: a question about you":"Next question")):null
     ];
   }
@@ -747,23 +811,23 @@ function vPlay(){
   return out;
 }
 function vDone(){
-  var g=game, sc=scores(g), a=sc.a, b=sc.b, per=g.total/2, head, sub, swap=mode==="swap";
-  if(a===b){head="Dead even. You love each other exactly the same."; sub="You both guessed "+a+" of "+per+" right.";}
+  var g=game, sc=scores(g), a=sc.a, b=sc.b, max=g.total/2*MAXPTS, head, sub, swap=mode==="swap";
+  if(a===b){head="Dead even. You love each other exactly the same."; sub="You both scored "+a+" of "+max+".";}
   else{
     var w=a>b?"a":"b", l=other(w);
     head=g.names[w]+" loves "+g.names[l]+" more.";
-    sub=g.names[w]+" guessed "+sc[w]+" of "+per+" right. "+g.names[l]+" guessed "+sc[l]+".";
+    sub=g.names[w]+" scored "+sc[w]+" of "+max+". "+g.names[l]+" scored "+sc[l]+".";
   }
   var rows=g.history.map(function(e,i){
-    var ok=e.t===e.g, s=subjectOf(g,i);
+    var p=points(e.t,e.g), s=subjectOf(g,i);
     return h("li",{},h("span",{class:"rq"},qText(g,e.q,i)),
-      h("span",{class:"rm"},g.names[s]+" said "+yn(e.t)+". "+g.names[other(s)]+" guessed "+yn(e.g)+"."),
-      h("span",{class:"rr"+(ok?"":" miss")},ok?"Point":"Miss"));
+      h("span",{class:"rm"},g.names[s]+" said "+e.t+". "+g.names[other(s)]+" guessed "+e.g+"."),
+      h("span",{class:"rr"+(p?"":" miss")},"+"+p));
   });
   var lastGuesser=other(subjectOf(g,g.total-1));
   return [scoreboard(),
     h("section",{class:"panel"},h("span",{class:"label"},"Final result"),h("h2",{class:"big"},head),h("p",{class:"muted"},sub),
-      h("button",{type:"button",class:"btn",id:"btn-again",disabled:busy||(!swap&&!canPlayLive()),onclick:playAgain},"Play again with new questions")),
+      h("button",{type:"button",class:"btn",id:"btn-again",disabled:busy,onclick:playAgain},"Play again with new questions")),
     swap?(seat===lastGuesser?handoff(true):replyForm("Paste a code here if "+g.names[other(seat)]+" starts another game")):null,
     h("section",{class:"panel"},h("span",{class:"label"},"Every question"),h("ul",{class:"recap"},rows)),
     footer()];
