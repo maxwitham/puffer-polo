@@ -16,6 +16,7 @@
 
 <!-- Google AdSense loader (ADS, STEP 1 done). The ad unit itself goes in the slot marked "ADS, STEP 2" further down. -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7905471716558332" crossorigin="anonymous"></script>
+<script>window.PP_ADS_ON=false; /* ad units stay switched off until AdSense approves the site; change false to true to switch them on */</script>
 
 <style>
 /* Layout: scoreboard over a 2:1 underwater pool; a bubble-edged menu panel covers the left of the pool
@@ -189,9 +190,8 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
 </main>
 
 <!-- AdSense unit "Puffer Polo below game". It sits well below the game on purpose: ad networks do not allow ads right next to game controls. -->
-<div class="ad-slot" id="ad-bottom">
+<div class="ad-slot" id="ad-bottom" hidden>
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7905471716558332" data-ad-slot="2335261472" data-ad-format="auto" data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <!-- AdSense units "Puffer Polo left rail" and "Puffer Polo right rail". The script at the end of the page shows and loads them only when the window is wide enough. -->
@@ -1048,6 +1048,9 @@ requestAnimationFrame(frame);
 <script>
 /* Side ads: show them only when there is room for a 160px ad plus a 150px gap on each side of the game, and never on touch screens. */
 (function(){
+  if(!window.PP_ADS_ON)return;                         // ads are switched off in the page head
+  function load(){try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}}
+  document.getElementById('ad-bottom').hidden=false;load();   // the ad below the game
   var rails=[document.getElementById('rail-left'),document.getElementById('rail-right')],
       wrap=document.querySelector('.wrap'),stage=document.querySelector('.stage'),loaded=false;
   function place(){
@@ -1057,7 +1060,7 @@ requestAnimationFrame(frame);
     rails.forEach(function(r){r.hidden=!room;r.style.top=top+'px';});
     if(room&&!loaded){
       loaded=true;
-      rails.forEach(function(){try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}});
+      rails.forEach(load);
     }
   }
   place();addEventListener('resize',place);addEventListener('load',place);
