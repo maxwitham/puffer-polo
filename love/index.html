@@ -145,69 +145,89 @@ input.code{font-family:var(--mono);letter-spacing:.04em}
 (function(){
 "use strict";
 var BANK=[
-"Does {n} like the colour orange?",
-"Would {n} rather stay in than go out on a Friday night?",
-"Does {n} sing in the shower?",
-"Has {n} ever cried at an animated film?",
-"Does {n} believe in love at first sight?",
-"Would {n} eat pineapple on pizza?",
-"Does {n} sleep with socks on?",
-"Is {n} a morning person?",
-"Does {n} remember what the two of you ate on your first date?",
-"Has {n} ever re-read old messages from {o} just to smile?",
-"Does {n} check their phone before getting out of bed?",
-"Would {n} choose the beach over the mountains?",
-"Does {n} like coriander?",
-"Has {n} ever pretended to like a present?",
-"Does {n} talk to animals like they're people?",
-"Would {n} get on a plane tomorrow if the ticket was free?",
-"Does {n} like scary movies?",
-"Has {n} ever fallen asleep on a video call with {o}?",
-"Does {n} make the bed every morning?",
-"Would {n} give {o} the last bite of dessert?",
-"Does {n} keep a countdown to the next visit?",
 "Does {n} dance when nobody's watching?",
-"Can {n} cook a proper dinner without a recipe?",
-"Does {n} like long phone calls more than texting?",
-"Has {n} ever saved a photo of {o} without saying so?",
-"Does {n} like Vegemite?",
-"Would {n} rather have a dog than a cat?",
-"Does {n} hit snooze more than once?",
-"Does {n} cry at weddings?",
-"Is {n} usually the first to say sorry?",
-"Does {n} like surprises?",
-"Has {n} ever got the time difference wrong and messaged {o} at 3am?",
-"Does {n} keep something of {o}'s close by?",
-"Would {n} do karaoke sober?",
-"Does {n} eat breakfast most days?",
-"Does {n} like rainy days?",
+"Does {n} sing in the shower like it's a concert?",
+"Does {n} talk to themselves when they're alone?",
+"Has {n} ever practised an argument with {o} in the shower?",
+"Does {n} have a playlist they'd be embarrassed for {o} to see?",
+"Has {n} ever scrolled all the way back through {o}'s old photos?",
+"Does {n} re-read old messages from {o} just to smile?",
+"Has {n} ever screenshotted a message from {o} to show a friend?",
+"Does {n} have a favourite photo of {o} that {o} hates?",
+"Has {n} ever pretended to be asleep to get out of something?",
+"Has {n} ever fallen asleep on a video call with {o}?",
+"Has {n} ever cried at an ad?",
+"Does {n} do voices for animals?",
+"Has {n} ever waved back at someone who wasn't waving at them?",
+"Does {n} check themselves out in shop windows?",
 "Has {n} ever laughed at a message from {o} so hard that someone asked what was funny?",
+"Does {n} have a nickname for {o} that nobody else knows?",
+"Would {n} let {o} cut their hair?",
+"Would {n} hand {o} their unlocked phone right now?",
 "Does {n} think they're the funnier one?",
-"Does {n} think they're the better driver?",
-"Would {n} move cities for love?",
-"Does {n} read the last page of a book first?",
-"Does {n} like spicy food?",
-"Has {n} got a favourite photo of the two of you?",
-"Does {n} say goodnight even after an argument?",
-"Would {n} rather text than call when they're upset?",
-"Does {n} take sugar in tea or coffee?",
-"Is {n} afraid of spiders?",
-"Does {n} get hangry?",
-"Would {n} go skydiving?",
-"Does {n} know {o}'s coffee order by heart?",
-"Does {n} hog the blanket?",
+"Does {n} think they're the better kisser?",
+"Does {n} think they said \"I love you\" first?",
+"Has {n} ever eaten something off the floor when nobody was looking?",
 "Has {n} ever practised what to say before calling {o}?",
-"Does {n} prefer sunrise to sunset?",
-"Does {n} pick the window seat on a plane?",
-"Would {n} name a pet after a food?",
+"Did {n} look {o} up online before the first date?",
+"Has {n} ever sent {o} a message and then stared at the phone waiting?",
+"Does {n} have an outfit they wear because {o} likes it?",
+"Does {n} hog the blanket?",
+"Does {n} talk in their sleep?",
+"Has {n} ever woken up annoyed at {o} because of a dream?",
+"Has {n} ever pretended to like a present from {o}?",
+"Has {n} ever pretended to have seen a movie to sound cool?",
 "Does {n} still get butterflies before seeing {o}?",
-"Does {n} keep screenshots of the funniest chats with {o}?",
-"Does {n} like chocolate more than lollies?",
+"Does {n} keep a countdown to the next visit?",
 "Has {n} ever worn something of {o}'s to feel closer?",
-"Does {n} think {o} is the better cook?"
+"Has {n} ever hugged a pillow and pretended it was {o}?",
+"Has {n} ever got the time difference wrong and messaged {o} at 3am?",
+"Does {n} have a celebrity crush {o} doesn't know about?",
+"Would {n} survive a week without their phone?",
+"Has {n} ever teared up after hanging up on a call with {o}?",
+"Does {n} do a little dance when the food arrives?",
+"Does {n} finish the snacks before the movie starts?",
+"Does {n} laugh at their own jokes before the punchline?",
+"Has {n} ever blamed a fart on someone else?",
+"Has {n} ever sung into a hairbrush?",
+"Does {n} have whole conversations with {o} in their head?",
+"Has {n} ever written their name next to {o}'s just to see how it looks?",
+"Has {n} ever pictured growing old with {o}?",
+"Has {n} already picked a name for a pet the two of you don't have?",
+"Does {n} tell their friends too much about {o}?",
+"Has {n} ever shown a stranger a photo of {o} just to brag?",
+"Does {n} have a voice they use when imitating {o}?",
+"Would {n} give {o} the last bite of dessert?",
+"Is {n} secretly ticklish?",
+"Has {n} ever typed a long message to {o} and then deleted it?",
+"Has {n} ever kissed the phone screen during a call with {o}?",
+"Does {n} smile at their phone in public when {o} messages?",
+"Has {n} ever missed their stop because they were texting {o}?",
+"Does {n} have a song that always makes them think of {o}?",
+"Would {n} do karaoke sober?",
+"Has {n} given a name to their car, a plant or a gadget?",
+"Has {n} ever tripped in public and pretended it was on purpose?",
+"Does {n} practise facial expressions in the mirror?",
+"Has {n} ever taken more than twenty selfies to get one good one?",
+"Does {n} think they're a better driver than {o}?",
+"Does {n} think they'd beat {o} in an arm wrestle?",
+"Has {n} ever let {o} win on purpose?",
+"Would {n} eat {o}'s leftovers without asking?",
+"Has {n} ever said \"five minutes away\" while still at home?",
+"Has {n} ever fake-laughed at one of {o}'s jokes?",
+"Has {n} rewatched the same comfort show more than three times?",
+"Does {n} still sleep with a soft toy?",
+"Is {n} a tiny bit scared of the dark?",
+"Has {n} ever looked up flights to see {o} on a random weeknight?",
+"Does {n} know {o}'s coffee order by heart?",
+"Has {n} ever said goodnight to {o} and then stayed up for another hour?",
+"Does {n} stay on the call just to listen to {o} fall asleep?",
+"Has {n} ever bought something only because it reminded them of {o}?",
+"Does {n} get hangry and blame it on something else?",
+"Has {n} ever started a silly argument with {o} just for the attention?"
 ];
 var PH=["answer","guess","reveal","done"];
-var A32="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", ROOM="BCDFGHJKLMNPQRSTVWXZ", KEY="orange", SK="wlwm-session";
+var A32="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", ROOM="BCDFGHJKLMNPQRSTVWXZ", KEY="orange", SK="wlwm-session-2", WIRE_V=3;
 
 var app=document.getElementById("app");
 var net=null, partnerHere=false, joinTimer=null, liveErr="", resuming=false;
@@ -285,11 +305,11 @@ function norm(d){
 /* ---- the whole game as one small list: what live play shares, and what a text code carries ---- */
 function wire(g){
   var b3=function(v){return v===null?-1:v?1:0;};
-  return [2,g.pid,g.names.a,g.names.b,g.total,g.first==="a"?0:1,g.seed,g.ptr,g.round,PH.indexOf(g.phase),g.cur,b3(g.truth),b3(g.guess),
+  return [WIRE_V,g.pid,g.names.a,g.names.b,g.total,g.first==="a"?0:1,g.seed,g.ptr,g.round,PH.indexOf(g.phase),g.cur,b3(g.truth),b3(g.guess),
     g.history.map(function(e){return typeof e.q==="number"?e.q*4+(e.t?2:0)+(e.g?1:0):[e.q,e.t?1:0,e.g?1:0];}),g.rev];
 }
 function fromWire(a){
-  if(!Array.isArray(a)||(a[0]!==1&&a[0]!==2)) return null;
+  if(!Array.isArray(a)||a[0]!==WIRE_V) return null;
   var u3=function(v){return v===1?true:v===0?false:null;};
   return norm({pid:a[1],names:{a:a[2],b:a[3]},total:a[4],first:a[5]?"b":"a",seed:a[6],ptr:a[7],round:a[8],phase:PH[a[9]],cur:a[10],truth:u3(a[11]),guess:u3(a[12]),
     history:(Array.isArray(a[13])?a[13]:[]).map(function(e){return typeof e==="number"?{q:e>>2,t:!!(e&2),g:!!(e&1)}:{q:e&&e[0],t:!!(e&&e[1]),g:!!(e&&e[2])};}),rev:a[14]});
@@ -381,7 +401,11 @@ function hook(me,p,c){
   c.on("data",function(m){
     if(!mine()||!m) return;
     c._rx=Date.now();
-    if(m.t==="g"){var g=fromWire(m.g);if(g) consider(g);}
+    if(m.t==="g"){
+      var g=fromWire(m.g);
+      if(g) consider(g);
+      else if(Array.isArray(m.g)&&m.g[0]!==WIRE_V){liveErr="You two have different versions of the game open. Both reload the page, then start a new game.";render();}
+    }
   });
   var gone=function(){
     var i=me.conns.indexOf(c); if(i>=0) me.conns.splice(i,1);
