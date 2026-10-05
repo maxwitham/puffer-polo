@@ -111,7 +111,19 @@ button:disabled{opacity:.35;cursor:default}
 .skins button canvas{width:36px;height:36px;aspect-ratio:auto;border-radius:0;background:none;touch-action:auto}
 .odds{border-collapse:collapse;font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .odds th,.odds td{padding:4px 4px;text-align:right;font-weight:800}
-.chestlist{display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;align-self:stretch}
+.choices{display:flex;flex-direction:column;gap:9px;align-self:stretch}
+.choice{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;border-radius:16px;padding:.7em 1em;
+  background:rgba(4,34,44,.45);border-left:6px solid var(--violet)}
+.choice.random{border-left-color:var(--puffer)}
+.choice:hover{background:rgba(4,34,44,.68)}
+.choice strong{font:400 1.3rem/1.1 var(--display);color:var(--foam)}
+.choice small{color:var(--muted);font-size:.8rem;font-weight:700;line-height:1.25}
+.chestlist{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px 8px;align-items:center;align-self:stretch}
+.chestlist .info{width:28px;height:28px;padding:0;border-radius:50%;font:800 .95rem/1 Georgia,"Times New Roman",serif;font-style:italic}
+.chestlist .info[aria-expanded="true"]{background:var(--foam);color:var(--abyss)}
+#chestsInfo{max-width:none;align-self:stretch;min-height:3.9em}
+.chips{display:flex;flex-wrap:wrap;gap:4px 5px;margin-top:5px}
+.chips span{background:rgba(4,34,44,.55);border-radius:99px;padding:.12em .6em;font-size:.78rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .chestlist canvas{width:46px;height:34px;aspect-ratio:auto;border-radius:0;background:none;touch-action:auto}
 .chestlist span{font-weight:800;line-height:1.15}
 .chestlist small{display:block;color:var(--muted);font-weight:700;font-size:.78rem}
@@ -206,6 +218,10 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
   .go.play{font-size:1.15rem;padding:.45em 1em}
   .nav button,.foot button:not(.link){font-size:.8rem;padding:.42em .75em}
   .chestbtn{gap:8px}
+  .choice{padding:.5em .9em}
+  .choice strong{font-size:1.1rem}
+  .chestlist{gap:4px 8px}
+  .chestlist canvas{width:40px;height:30px}
   .chestbtn canvas{width:50px;height:38px}
   .chestbtn .badge{left:36px;top:-3px}
   .chestbtn .lbl{font-size:.85rem}
@@ -245,7 +261,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
         </div>
         <button class="go play" id="btnStart">Play</button>
         <div class="nav" role="group" aria-label="Other ways to play">
-          <button id="goOnline" data-mode="3">Online</button>
+          <button id="goOnline">Online</button>
           <button id="goLocal" data-mode="2">2 players</button>
           <button id="goQuick" data-mode="1">Quick match</button>
         </div>
@@ -253,6 +269,14 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
         <button class="chestbtn" id="btnChests" aria-label="Chests"><canvas id="chestIcon" width="132" height="100" aria-hidden="true"></canvas><span class="badge" id="chestBadge" hidden>0</span><span class="lbl">Chests<small id="chestSub">Win some to open</small></span></button>
       </div>
       <div class="view" id="vOnline" hidden>
+        <h2>Play online</h2>
+        <div class="choices">
+          <button class="choice friend" id="btnFriend"><strong>Play a friend</strong><small>Make a game and send them the code, or join theirs.</small></button>
+          <button class="choice random" id="btnRandom"><strong>Random opponent</strong><small>Get matched with someone who is looking right now.</small></button>
+        </div>
+        <button class="link" data-mode="4">Back</button>
+      </div>
+      <div class="view" id="vFriend" hidden>
         <h2>Play a friend</h2>
         <div class="online" id="onlineBox">
           <button class="go" id="btnCreate">Create game</button>
@@ -262,7 +286,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
           </form>
           <p class="msg" id="onlineMsg" role="status"></p>
         </div>
-        <button class="link" data-mode="4">Back</button>
+        <button class="link" id="btnFriendBack">Back</button>
       </div>
       <div class="view" id="vLocal" hidden>
         <h2>2 players</h2>
@@ -275,7 +299,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
         <p>Play a random player who is online right now. Win, and you might find a chest.</p>
         <button class="go" id="btnFind">Find a match</button>
         <p class="msg" id="quickMsg" role="status"></p>
-        <div class="foot"><button id="btnQuickStart">Play the computer</button><button class="link" data-mode="4">Back</button></div>
+        <div class="foot"><button id="btnQuickStart">Play the computer</button><button class="link" id="btnQuickBack">Back</button></div>
       </div>
       <div class="view" id="vSeek" hidden>
         <h2>Finding a player&hellip;</h2>
@@ -346,7 +370,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
       <div><h2>Bubbles</h2><p>Pop one for a power-up. The plus makes you giant, the chevrons give endless dashes, the bolt zaps your rival.</p></div>
       <div><h2>Chests and skins</h2><p>Beat a ladder opponent to win a chest, or find one by winning a quick match. Open them from Chests on the menu. Most hold a skin, some are empty, and a duplicate skin gives nothing.</p></div>
       <div><h2>Skin bonuses</h2><p>Skins are more than a look. Each one adds to your speed, strength, dash refill or boost time, and rarer skins add more. The Skins screen shows what each gives.</p></div>
-      <div><h2>Online</h2><p>Quick match pairs you with a random player who is looking at the same time. To play a friend, choose Online and press Create game, then send them the four-letter code.</p></div>
+      <div><h2>Online</h2><p>Choose Online to find a random opponent or to play a friend: press Create game, then send them the four-letter code.</p></div>
       <div><h2>More</h2><p><a href="guide.html">The full guide</a> has tips, every opponent, and the chest odds.</p></div>
     </div>
   </details>
@@ -838,7 +862,7 @@ function resume(){
   if(resumeTo==='countdown')startCountdown();else state=resumeTo;
   blurActive();
 }
-const VIEWS=['vMenu','vOnline','vLocal','vQuick','vSeek','vSkins','vChests','vChest','vLobby','vJoin','vLost','vPause','vOver'];
+const VIEWS=['vMenu','vOnline','vFriend','vLocal','vQuick','vSeek','vSkins','vChests','vChest','vLobby','vJoin','vLost','vPause','vOver'];
 function showCard(id){$('card').hidden=!id;VIEWS.forEach(v=>{$(v).hidden=v!==id;});document.body.classList.toggle('incard',!!id);}
 let clockTxt='';
 function paintScore(){$('scoreL').textContent=score[0];$('scoreR').textContent=score[1];}
@@ -1601,8 +1625,10 @@ if(wide){
   addEventListener('pointerup',goFull,true);            // browsers only allow full screen straight after a tap
   document.addEventListener('fullscreenchange',()=>{if(!fullEl()&&wentFull){wentFull=false;if(wide.matches)fullOff=true;}});   // the player left full screen themselves: do not force it back
 }
-const MODEVIEW={4:'vMenu',1:'vQuick',2:'vLocal',3:'vOnline'};
-function setMode(m){                                    // 4 chest run (main menu), 1 quick match, 2 two players, 3 online
+const MODEVIEW={4:'vMenu',1:'vQuick',2:'vLocal',3:'vFriend'};
+let quickVia=false;                                     // true when Quick match was reached through Online, so its Back button returns there
+function onlineMenu(){mode=4;$('onlineMsg').textContent='';$('quickMsg').textContent='';updateRunBox();showCard('vOnline');}   // the choice between a friend and a random opponent
+function setMode(m){                                    // 4 chest run (main menu), 1 quick match, 2 two players, 3 online with a friend
   mode=m;$('onlineMsg').textContent='';$('quickMsg').textContent='';
   updateRunBox();
   showCard(MODEVIEW[m]);
@@ -1741,19 +1767,39 @@ function revealChest(){                                 // the lid comes up: onl
 function openChests(){                                  // the Chests screen: every type, how many you hold, and a button to open one
   const g=$('chestList');g.textContent='';
   CHESTS.forEach((ch,i)=>{
-    const n=save.inv[i],c=document.createElement('canvas'),sp=document.createElement('span'),sm=document.createElement('small'),b=document.createElement('button');
+    const n=save.inv[i],c=document.createElement('canvas'),sp=document.createElement('span'),sm=document.createElement('small'),b=document.createElement('button'),inf=document.createElement('button');
     c.width=92;c.height=68;c.setAttribute('aria-hidden','true');
     sp.textContent=ch.name;sp.className='rar'+i;sm.textContent=n?'You have '+n:'None yet';sp.appendChild(sm);
     b.type='button';b.textContent='Open';b.disabled=!n;b.setAttribute('aria-label','Open a '+ch.name);
     b.addEventListener('click',()=>{showChest(i,'inv',ch.name,'');shakeChest();});
-    g.appendChild(c);g.appendChild(sp);g.appendChild(b);
+    inf.type='button';inf.className='info';inf.textContent='i';inf.setAttribute('aria-label','Odds for the '+ch.name);inf.setAttribute('aria-expanded','false');
+    inf.addEventListener('click',()=>chestOdds(inf.getAttribute('aria-expanded')==='true'?-1:i));
+    g.appendChild(c);g.appendChild(sp);g.appendChild(inf);g.appendChild(b);
     const x=c.getContext('2d');x.setTransform(2,0,0,2,0,0);x.translate(23,18);x.scale(.36,.36);x.globalAlpha=n?1:.35;
     chestLid(x,ch,0);chestBody(x,ch);
   });
-  $('chestsInfo').textContent=chestCount()?'Open one to see what is inside. Some are empty.':'No chests yet. Win them in the Chest run, or find them by winning quick matches.';
+  chestOdds(-1);
   showCard('vChests');
 }
+function chestOdds(i){                                  // under the list: the odds for one chest type, or the usual hint when i is -1
+  const box=$('chestsInfo');box.textContent='';
+  $('chestList').querySelectorAll('.info').forEach((b,k)=>b.setAttribute('aria-expanded',String(k===i)));
+  if(i<0){box.textContent=chestCount()?'Open one to see what is inside. Press i for a chest\u2019s odds.':'No chests yet. Win them in the Chest run, or find them by winning quick matches. Press i for a chest\u2019s odds.';return;}
+  const ch=CHESTS[i],t=document.createElement('strong'),w=document.createElement('span');
+  t.className='rar'+i;t.textContent=ch.name+' odds';box.appendChild(t);
+  if(!ch.empty)box.appendChild(document.createTextNode(', never empty'));
+  w.className='chips';
+  const add=(label,pct,cls)=>{if(!pct)return;const e=document.createElement('span');if(cls)e.className=cls;e.textContent=label+' '+pct+'%';w.appendChild(e);};
+  add('Empty',ch.empty,'');ch.odds.forEach((o,r)=>add(RAR[r],o,'rar'+r));
+  box.appendChild(w);
+}
 $('btnChests').addEventListener('click',openChests);
+$('goOnline').addEventListener('click',onlineMenu);
+$('btnFriend').addEventListener('click',()=>setMode(3));
+$('btnFriendBack').addEventListener('click',onlineMenu);
+$('btnRandom').addEventListener('click',()=>{quickVia=true;setMode(1);});
+$('goQuick').addEventListener('click',()=>{quickVia=false;});
+$('btnQuickBack').addEventListener('click',()=>{if(quickVia)onlineMenu();else setMode(4);});
 $('btnChestsBack').addEventListener('click',()=>{updateRunBox();showCard('vMenu');});
 $('btnOpen').addEventListener('click',shakeChest);
 $('btnEquip').addEventListener('click',e=>{if(!chest.skin)return;save.skin=chest.skin.id;store();e.currentTarget.textContent='Equipped';e.currentTarget.disabled=true;});
