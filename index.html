@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Puffer Polo – underwater polo you can play online with a friend</title>
-<meta name="description" content="Puffer Polo is a free browser game: two octopuses dash a grumpy pufferfish into each other's caves. Beat eight opponents to win chests and unlock skins, share a keyboard, or send a friend a code and play online.">
+<meta name="description" content="Puffer Polo is a free browser game: two octopuses dash a grumpy pufferfish into each other's caves. Beat eight opponents to win chests and unlock skins, share a keyboard, or play online against a random player or a friend.">
 <meta property="og:title" content="Puffer Polo">
 <meta property="og:description" content="Free underwater polo. Send a friend a code and play online.">
 <meta property="og:type" content="website">
@@ -100,15 +100,22 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--puffer);outline
 #code{font:400 1.5rem/1 var(--display);letter-spacing:.2em;text-transform:uppercase;text-align:center;width:6.4ch;
   box-sizing:content-box;padding:.35em .5em;border-radius:12px;border:2px solid rgba(234,252,255,.3);background:var(--abyss);color:var(--foam)}
 .msg{color:var(--puffer)!important;font-size:.9rem;min-height:1.3em}
+#quickMsg:empty{display:none}
 .bigcode{font:400 clamp(2.6rem,8cqi,4rem)/1 var(--display);letter-spacing:.14em;color:var(--puffer)}
 button:disabled{opacity:.35;cursor:default}
 .rar0{color:#cfdde2!important}.rar1{color:#6cc4ff!important}.rar2{color:#d29bff!important}.rar3{color:#ffd75e!important}.rar4{color:#ff8fc7!important}
-.skins{display:grid;grid-template-columns:repeat(5,50px);gap:6px}
-.skins button{width:50px;height:50px;padding:0;border-radius:12px;background:rgba(4,34,44,.55);border:2px solid transparent}
+.skins{display:grid;grid-template-columns:repeat(auto-fill,40px);gap:5px;align-self:stretch}
+.skins button{width:40px;height:40px;padding:0;border-radius:10px;background:rgba(4,34,44,.55);border:2px solid transparent}
 .skins button[aria-pressed="true"]{border-color:var(--puffer)}
-.skins button canvas{width:46px;height:46px;aspect-ratio:auto;border-radius:0;background:none;touch-action:auto}
-.odds{border-collapse:collapse;font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.odds th,.odds td{padding:4px 5px;text-align:right;font-weight:800}
+.skins button canvas{width:36px;height:36px;aspect-ratio:auto;border-radius:0;background:none;touch-action:auto}
+.odds{border-collapse:collapse;font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.odds th,.odds td{padding:4px 4px;text-align:right;font-weight:800}
+.chestlist{display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;align-self:stretch}
+.chestlist canvas{width:46px;height:34px;aspect-ratio:auto;border-radius:0;background:none;touch-action:auto}
+.chestlist span{font-weight:800;line-height:1.15}
+.chestlist small{display:block;color:var(--muted);font-weight:700;font-size:.78rem}
+.chestlist button{font-size:.85rem;padding:.45em 1em}
+#btnChests.has{background:var(--puffer);color:var(--abyss)}
 .odds th:first-child,.odds td:first-child{text-align:left;color:var(--foam)}
 #chestCv{width:230px;height:160px;aspect-ratio:auto;border-radius:0;background:none;touch-action:auto}
 .small{font-size:.5em;color:var(--muted)}
@@ -149,9 +156,47 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
 .site{max-width:1100px;margin:26px auto 0;color:var(--muted);font-size:.88rem;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
 .site p{margin:0;max-width:70ch}
 .site a{color:var(--foam)}
+
+/* A phone held sideways: the pool fills the screen, with the scoreboard, joystick and buttons laid over it. */
+@media (pointer:coarse) and (orientation:landscape) and (max-height:560px){
+  html,body{height:100%;overflow:hidden}
+  body{padding:0;background:#02161c}
+  .wrap{position:fixed;inset:0;z-index:5;max-width:none;display:block;background:#02161c}
+  .stage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right)),200vh)}
+  @supports (height:100dvh){.stage{width:min(calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right)),200dvh)}}
+  #pool{border-radius:0}
+  .board{position:absolute;z-index:2;top:2px;left:50%;transform:translateX(-50%);width:min(60vw,340px);gap:8px;pointer-events:none}
+  .score{font-size:1.5rem}
+  .clock{font-size:.8rem;background:rgba(11,86,101,.7)}
+  .team{gap:6px}
+  .team .name{font-size:.62rem}
+  .card{position:absolute;inset:0 auto 0 0;width:min(66%,430px);margin:0;border-radius:18px 50% 50% 18px / 18px 50% 50% 18px;padding:10px 64px 10px 18px}
+  .card h1,.card h2{font-size:1.7rem;margin:0}
+  .card p{font-size:.88rem}
+  .view{gap:7px}
+  .ticket{padding:6px 8px}
+  .ticket .who small{font-size:.72rem}
+  .ticket .who strong{font-size:1.1rem}
+  .go{font-size:1.1rem}
+  .go.play{font-size:1.15rem;padding:.45em 1em}
+  .nav button,.foot button:not(.link){font-size:.8rem;padding:.42em .75em}
+  #chestCv{width:172px;height:120px}
+  .pad{display:flex;position:absolute;z-index:3;left:0;right:0;bottom:0;pointer-events:none;opacity:.6;
+    padding:0 max(14px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+  .pad>*{pointer-events:auto}
+  .stick{width:112px;height:112px}
+  .knob{width:46px;height:46px}
+  .pad button{width:92px;height:92px;font-size:1.1rem}
+  body.incard .pad{display:none}                          /* no joystick or scoreboard over the menus */
+  body.incard .board{visibility:hidden}
+  .bar{position:absolute;z-index:3;top:4px;right:max(6px,env(safe-area-inset-right));gap:4px;opacity:.75}
+  .bar button{font-size:.68rem;padding:.35em .7em}
+  .how,.site,.ad-slot,.rail{display:none!important}
+}
 </style>
 </head>
-<body>
+<body class="incard">
 
 <main class="wrap">
   <header class="board idle" id="board">
@@ -176,7 +221,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
           <button id="goLocal" data-mode="2">2 players</button>
           <button id="goQuick" data-mode="1">Quick match</button>
         </div>
-        <div class="foot"><button id="btnSkins">Skins</button><button class="link" id="btnHow">How to play</button></div>
+        <div class="foot"><button id="btnSkins">Skins</button><button id="btnChests">Chests</button><button class="link" id="btnHow">How to play</button></div>
       </div>
       <div class="view" id="vOnline" hidden>
         <h2>Play a friend</h2>
@@ -198,14 +243,21 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
       </div>
       <div class="view" id="vQuick" hidden>
         <h2>Quick match</h2>
-        <p>One game against the computer in the standard pool. No chest.</p>
-        <div class="seg" id="segDiff" role="group" aria-label="Opponent skill">
-          <button id="diff0" data-diff="0" aria-pressed="false">Rookie</button>
-          <button id="diff1" data-diff="1" aria-pressed="true">Pro</button>
-          <button id="diff2" data-diff="2" aria-pressed="false">All-Star</button>
-        </div>
-        <button class="go" id="btnQuickStart">Play</button>
-        <button class="link" data-mode="4">Back</button>
+        <p>Play a random player who is online right now. Win, and you might find a chest.</p>
+        <button class="go" id="btnFind">Find a match</button>
+        <p class="msg" id="quickMsg" role="status"></p>
+        <div class="foot"><button id="btnQuickStart">Play the computer</button><button class="link" data-mode="4">Back</button></div>
+      </div>
+      <div class="view" id="vSeek" hidden>
+        <h2>Finding a player&hellip;</h2>
+        <p id="seekMsg" role="status">Looking for someone else who wants a match.</p>
+        <div class="row"><button id="btnSeekCpu">Play the computer</button><button id="btnSeekCancel">Cancel</button></div>
+      </div>
+      <div class="view" id="vChests" hidden>
+        <h2>Chests</h2>
+        <div class="chestlist" id="chestList"></div>
+        <p id="chestsInfo" role="status"></p>
+        <button class="go" id="btnChestsBack">Back</button>
       </div>
       <div class="view" id="vSkins" hidden>
         <h2>Skins <span class="small" id="skinCount"></span></h2>
@@ -243,7 +295,8 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
       <div class="view" id="vOver" hidden>
         <h2 id="overTitle">Full time</h2>
         <div id="overScore">0 &ndash; 0</div>
-        <div class="row"><button class="go" id="btnAgain">Rematch</button><button id="btnMenu">Menu</button></div>
+        <p id="overChest" role="status" hidden></p>
+        <div class="row"><button class="go" id="btnOverChest" hidden>Open chest</button><button class="go" id="btnAgain">Rematch</button><button id="btnMenu">Menu</button></div>
       </div>
     </section>
   </div>
@@ -262,9 +315,9 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
       <div><h2>Controls</h2><p><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or the arrow keys swim, <kbd>Space</kbd> or <kbd>Shift</kbd> dashes. On a phone, use the joystick and the dash button.</p></div>
       <div><h2>Dash</h2><p>A dash hits the ball far harder and stuns the other octopus. You hold three, shown as dots under you, and each takes a moment to refill.</p></div>
       <div><h2>Bubbles</h2><p>Pop one for a power-up. The plus makes you giant, the chevrons give endless dashes, the bolt zaps your rival.</p></div>
-      <div><h2>Chests and skins</h2><p>Beat an opponent to win a chest. Harder opponents give rarer chests, and each has its own pool and ball. Chests hold skins; a duplicate gives nothing.</p></div>
+      <div><h2>Chests and skins</h2><p>Beat a ladder opponent to win a chest, or find one by winning a quick match. Open them from Chests on the menu. Most hold a skin, some are empty, and a duplicate skin gives nothing.</p></div>
       <div><h2>Skin bonuses</h2><p>Skins are more than a look. Each one adds to your speed, strength, dash refill or boost time, and rarer skins add more. The Skins screen shows what each gives.</p></div>
-      <div><h2>Online</h2><p>Choose Online and press Create game, then send your friend the four-letter code. They choose Online, type it in and press Join.</p></div>
+      <div><h2>Online</h2><p>Quick match pairs you with a random player who is looking at the same time. To play a friend, choose Online and press Create game, then send them the four-letter code.</p></div>
       <div><h2>More</h2><p><a href="guide.html">The full guide</a> has tips, every opponent, and the chest odds.</p></div>
     </div>
   </details>
@@ -280,7 +333,7 @@ kbd{font:800 .8em var(--body);color:var(--foam);background:rgba(234,252,255,.14)
 <aside class="rail right" id="rail-right" aria-label="Advertisement" hidden><ins class="adsbygoogle" data-ad-client="ca-pub-7905471716558332" data-ad-slot="6785642375"></ins></aside>
 
 <footer class="site">
-  <p>Puffer Polo is a free browser game for one or two players. The first to three goals wins. Beat opponents to open chests and unlock skins, or play a friend online with a code.</p>
+  <p>Puffer Polo is a free browser game for one or two players. The first to three goals wins. Beat opponents to win chests and unlock skins, take on a random player in a quick match, or play a friend online with a code.</p>
   <p><a href="guide.html">Guide and tips</a> &nbsp; <a href="privacy.html">Privacy</a> &nbsp; pufferpolo@gmail.com</p>
 </footer>
 
@@ -334,20 +387,39 @@ const SKINS=[
   {id:'party',name:'Party',rar:1,col:'#9be15d',dark:'#5fa82e',hat:'party',st:{bt:1.3}},
   {id:'cool',name:'Cool',rar:1,col:'#6ec6ff',dark:'#3789c9',hat:'shades',st:{spd:1.04,str:1.05}},
   {id:'dapper',name:'Dapper',rar:1,col:'#c9a7ff',dark:'#8d6bd1',hat:'tophat',st:{spd:1.04,rg:1.08}},
-  {id:'lantern',name:'Lantern',rar:2,col:'#7ff9ff',dark:'#2fb8c4',pat:'glow',st:{spd:1.08,rg:1.15}},
+  {id:'lantern',name:'Lantern',rar:2,col:'#7ff9ff',dark:'#2fb8c4',pat:'glow',glow:'#7ff9ff',st:{spd:1.08,rg:1.15}},
   {id:'ghost',name:'Ghost',rar:2,col:'#f2fbff',dark:'#c5dde6',pat:'ghost',st:{spd:1.12,bt:1.2}},
   {id:'magma',name:'Magma',rar:2,col:'#3a2420',dark:'#1f1210',pat:'magma',p2:'#ff7a1a',lite:true,st:{str:1.15,rg:1.08}},
   {id:'golden',name:'Golden',rar:3,col:'#ffcf3f',dark:'#c98f12',pat:'gold',st:{str:1.14,rg:1.12,bt:1.4}},
   {id:'stardust',name:'Stardust',rar:3,col:'#3b2a7a',dark:'#231654',pat:'galaxy',lite:true,st:{spd:1.12,str:1.08,rg:1.2}},
-  {id:'royal',name:'Rainbow Royal',rar:4,col:'#ff5fa8',dark:'#c2337a',pat:'rainbow',hat:'crown',st:{spd:1.16,str:1.18,rg:1.3,bt:1.5}}
+  {id:'royal',name:'Rainbow Royal',rar:4,col:'#ff5fa8',dark:'#c2337a',pat:'rainbow',hat:'crown',st:{spd:1.16,str:1.18,rg:1.3,bt:1.5}},
+  {id:'peach',name:'Peach',rar:0,col:'#ffb38a',dark:'#d97f52',st:{spd:1.02,bt:1.1}},
+  {id:'plum',name:'Plum',rar:0,col:'#b678e0',dark:'#7d44a8',st:{str:1.04,rg:1.03}},
+  {id:'lagoon',name:'Lagoon',rar:0,col:'#35b8a8',dark:'#1d8073',st:{rg:1.06,bt:1.05}},
+  {id:'cherry',name:'Cherry',rar:0,col:'#ee5a6f',dark:'#ad2f45',st:{str:1.06}},
+  {id:'sandy',name:'Sandy',rar:0,col:'#e6d3a1',dark:'#b59d63',st:{spd:1.03,bt:1.08}},
+  {id:'zebra',name:'Zebra',rar:1,col:'#f3f6f8',dark:'#aab6bf',pat:'stripes',p2:'#1b1f33',st:{spd:1.06,rg:1.06}},
+  {id:'bumble',name:'Bumble',rar:1,col:'#ffd23f',dark:'#c99710',pat:'bands',p2:'#2a2118',st:{spd:1.04,str:1.06}},
+  {id:'sailor',name:'Sailor',rar:1,col:'#5aa9e6',dark:'#2f6fae',hat:'sailor',st:{rg:1.1,bt:1.12}},
+  {id:'pirate',name:'Pirate',rar:1,col:'#f08a5d',dark:'#b85a32',hat:'pirate',st:{str:1.07,bt:1.15}},
+  {id:'melon',name:'Melon',rar:1,col:'#ff6b81',dark:'#3f9b4b',pat:'seeds',p2:'#2a2118',st:{str:1.05,rg:1.09}},
+  {id:'frost',name:'Frostbite',rar:2,col:'#d6f3ff',dark:'#7fbfe0',pat:'frost',glow:'#bfe9ff',st:{rg:1.2,bt:1.15}},
+  {id:'toxic',name:'Toxic',rar:2,col:'#9dff3c',dark:'#3f8f12',pat:'toxic',p2:'#1f5a0a',glow:'#9dff3c',st:{spd:1.08,str:1.1}},
+  {id:'wizard',name:'Wizard',rar:2,col:'#7d5be6',dark:'#4a2fa3',hat:'wizard',st:{rg:1.1,bt:1.35}},
+  {id:'inferno',name:'Inferno',rar:3,col:'#ff5a1f',dark:'#a82a08',pat:'fire',glow:'#ff8a2a',st:{spd:1.1,str:1.16,bt:1.2}},
+  {id:'thunder',name:'Thunder',rar:3,col:'#2b3a67',dark:'#16203f',pat:'storm',lite:true,st:{spd:1.15,rg:1.18,bt:1.25}},
+  {id:'celestial',name:'Celestial',rar:4,col:'#0d1b3d',dark:'#3ad6c5',pat:'aurora',hat:'halo',glow:'#7dffd9',lite:true,st:{spd:1.2,str:1.15,rg:1.32,bt:1.45}}
 ];
-/* Chest odds are the percentage chance of each rarity: Common, Rare, Epic, Legendary, Mythic. Each row adds up to 100. */
+/* What a chest holds, as percentages. empty = nothing inside; odds = a skin of each rarity: Common, Rare, Epic, Legendary, Mythic.
+   empty plus the five odds add up to 100 in every row. */
 const CHESTS=[
-  {name:'Common chest',odds:[78.99,18,2.8,.2,.01],body:'#a8703c',lid:'#b98045',band:'#6b4423',lock:'#e8c36a'},
-  {name:'Rare chest',odds:[45,42,11,1.9,.1],body:'#7fa9c4',lid:'#93bdd6',band:'#3f6b88',lock:'#eaf6ff'},
-  {name:'Epic chest',odds:[15,45,32,7.5,.5],body:'#8a5fd0',lid:'#9d74e0',band:'#ffd75e',lock:'#fff1b8'},
-  {name:'Legendary chest',odds:[0,25,50,22,3],body:'#f2b632',lid:'#ffd75e',band:'#b3361e',lock:'#ffffff'}
+  {name:'Common chest',empty:25,odds:[56,16,2.8,.19,.01],body:'#a8703c',lid:'#b98045',band:'#6b4423',lock:'#e8c36a'},
+  {name:'Rare chest',empty:15,odds:[35,38,10,1.9,.1],body:'#7fa9c4',lid:'#93bdd6',band:'#3f6b88',lock:'#eaf6ff'},
+  {name:'Epic chest',empty:8,odds:[12,42,30,7.5,.5],body:'#8a5fd0',lid:'#9d74e0',band:'#ffd75e',lock:'#fff1b8'},
+  {name:'Legendary chest',empty:0,odds:[0,25,50,22,3],body:'#f2b632',lid:'#ffd75e',band:'#b3361e',lock:'#ffffff'}
 ];
+/* Winning a quick match might turn up a chest: chance is how often, tiers the percentage chance of each chest type (in CHESTS order). */
+const QUICK_DROP={online:{chance:.65,tiers:[55,30,12,3]},cpu:{chance:.35,tiers:[75,20,5,0]}};
 /* A map: cave mouth height (goal), round bumpers [x,y,radius], slip (icy movement) and its colours. */
 const MAPS=[
   {name:'Kelp Lagoon',goal:200,bumps:[],water:['#12909a','#08596a','#052f3c'],rock:'#062832',edge:'rgba(234,252,255,.2)',sand:'#b8ad84',kelp:'rgba(18,128,104,.55)',bump:'#0b5665'},
@@ -414,13 +486,14 @@ function setArena(mi,bi){                               // choose the map and th
 }
 /* Progress is kept in this browser only (localStorage): owned skins, the equipped one, and how far up the ladder you are. */
 const SAVE_KEY='pufferpolo_save_v1';
-const save={owned:['coral'],skin:'coral',unlocked:1,chests:0,dupes:0};
+const save={owned:['coral'],skin:'coral',unlocked:1,chests:0,dupes:0,inv:CHESTS.map(()=>0)};   // inv = unopened chests of each type
 try{
   const sv=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
   if(sv&&Array.isArray(sv.owned)){
     save.owned=SKINS.filter(k=>k.base||sv.owned.includes(k.id)).map(k=>k.id);
     if(save.owned.includes(sv.skin))save.skin=sv.skin;
     save.unlocked=clamp(sv.unlocked|0,1,LADDER.length);save.chests=sv.chests|0;save.dupes=sv.dupes|0;
+    if(Array.isArray(sv.inv))save.inv=CHESTS.map((_,i)=>clamp(sv.inv[i]|0,0,999));
   }
 }catch(e){}
 function store(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}}
@@ -428,12 +501,22 @@ const run={opp:save.unlocked-1};                        // which ladder opponent
 const skinIdx=()=>Math.max(0,SKINS.findIndex(k=>k.id===save.skin));
 const skinAt=i=>(i>0&&SKINS[i])?SKINS[i]:null;          // position 0 is the plain team colour
 const mySkin=()=>skinAt(skinIdx());
-function rollChest(tier){                               // returns the skin a chest of this tier gives
-  const odds=CHESTS[tier].odds;let x=Math.random()*100,rar=-1;
-  for(let i=0;i<odds.length;i++){if(x<odds[i]){rar=i;break;}x-=odds[i];}
-  if(rar<0)rar=odds[0]>0?0:1;                           // rounding fell off the end: give the most common rarity, never the rarest
+function rollChest(tier){                               // returns the skin a chest of this tier gives, or null when it is empty
+  const ch=CHESTS[tier];let x=Math.random()*100,rar=-1;
+  if(x<ch.empty)return null;
+  x-=ch.empty;
+  for(let i=0;i<ch.odds.length;i++){if(x<ch.odds[i]){rar=i;break;}x-=ch.odds[i];}
+  if(rar<0)rar=ch.odds[0]>0?0:1;                        // rounding fell off the end: give the most common rarity, never the rarest
   const pool=SKINS.filter(k=>k.rar===rar&&!k.base);
   return pool[Math.random()*pool.length|0];
+}
+function quickChest(online){                            // after a quick match win: the chest type found (already added to save.inv), or -1 for none
+  const d=online?QUICK_DROP.online:QUICK_DROP.cpu;
+  if(Math.random()>=d.chance)return -1;
+  let x=Math.random()*100,tier=0;
+  for(let i=0;i<d.tiers.length;i++){if(x<d.tiers[i]){tier=i;break;}x-=d.tiers[i];}
+  save.inv[tier]++;store();
+  return tier;
 }
 
 /* ---------- sound ---------- */
@@ -680,7 +763,7 @@ function names(){
   if(!demo){
     if(mode===1){L='You';R='CPU';}
     else if(mode===4){L='You';R=LADDER[run.opp].name;}
-    else if(mode===3){L=GUEST?'Friend':'You';R=GUEST?'You':'Friend';}
+    else if(mode===3){const o=net.quick?'Rival':'Friend';L=GUEST?o:'You';R=GUEST?'You':o;}
   }
   $('nameL').textContent=L;$('nameR').textContent=R;
   $('board').classList.toggle('idle',demo);             // the scoreboard only shows during a match
@@ -689,7 +772,9 @@ function names(){
 function blurActive(){if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}
 function startMatch(){
   if(mode===3)return;
-  if(net.role)netDrop();
+  if(net.role)closeNet(netDrop());
+  seek.on=false;
+  if(mode===1)diff=save.unlocked<=2?0:save.unlocked<=5?1:2;   // the quick match computer keeps pace with how far up the ladder you are
   initAudio();
   demo=false;score=[0,0];time=mode===4?RUN_TIME:MATCH;overtime=false;otTime=0;parts=[];texts=[];
   const opp=LADDER[run.opp];
@@ -698,11 +783,16 @@ function startMatch(){
   names();paintScore();showCard(null);blurActive();
   startCountdown();
 }
+let overTier=-1;                                        // the chest found by winning this quick match, if any
 function showOver(){
-  const w=score[0]>score[1]?0:1,me=GUEST?1:0;
+  const w=score[0]>score[1]?0:1,me=GUEST?1:0,quick=mode===1||(mode===3&&!!net.quick);
   if(mode===4&&w===0){awardChest();return;}
-  $('overTitle').textContent=mode===2?(w===0?'Coral wins':'Violet wins'):(w===me?'You win':(mode===3?'Friend wins':mode===4?LADDER[run.opp].name+' wins':'CPU wins'));
-  $('overScore').textContent=score[0]+' – '+score[1];
+  $('overTitle').textContent=mode===2?(w===0?'Coral wins':'Violet wins'):(w===me?'You win':(mode===3?(net.quick?'Rival wins':'Friend wins'):mode===4?LADDER[run.opp].name+' wins':'CPU wins'));
+  $('overScore').textContent=score[0]+' \u2013 '+score[1];
+  overTier=quick&&w===me?quickChest(mode===3):-1;
+  const oc=$('overChest');oc.hidden=!(quick&&w===me);oc.className=overTier<0?'':'rar'+overTier;
+  oc.textContent=overTier<0?'No chest this time.':'You found a '+CHESTS[overTier].name+'!';
+  $('btnOverChest').hidden=overTier<0;$('btnAgain').classList.toggle('go',overTier<0);
   showCard('vOver');
   tone(523,.2,'triangle',.07);setTimeout(()=>tone(659,.2,'triangle',.07),180);setTimeout(()=>tone(784,.4,'triangle',.07),360);
 }
@@ -719,8 +809,8 @@ function resume(){
   if(resumeTo==='countdown')startCountdown();else state=resumeTo;
   blurActive();
 }
-const VIEWS=['vMenu','vOnline','vLocal','vQuick','vSkins','vChest','vLobby','vJoin','vLost','vPause','vOver'];
-function showCard(id){$('card').hidden=!id;VIEWS.forEach(v=>{$(v).hidden=v!==id;});}
+const VIEWS=['vMenu','vOnline','vLocal','vQuick','vSeek','vSkins','vChests','vChest','vLobby','vJoin','vLost','vPause','vOver'];
+function showCard(id){$('card').hidden=!id;VIEWS.forEach(v=>{$(v).hidden=v!==id;});document.body.classList.toggle('incard',!!id);}
 let clockTxt='';
 function paintScore(){$('scoreL').textContent=score[0];$('scoreR').textContent=score[1];}
 function paintClock(){
@@ -798,16 +888,45 @@ function netLost(me,reason){                            // the other side went a
   const was=me.on,role=me.role;
   closeNet(netDrop());
   toMenu();
-  if(!was&&role==='guest'){setMode(3);$('onlineMsg').textContent=reason;}
-  else{$('lostMsg').textContent=reason;showCard('vLost');}
+  if(me.quick&&!was){seek.on=false;setMode(1);$('quickMsg').textContent=reason;}
+  else if(!was&&role==='guest'){setMode(3);$('onlineMsg').textContent=reason;}
+  else{lostQuick=!!me.quick;$('lostMsg').textContent=reason;showCard('vLost');}
+}
+let lostQuick=false;
+const pal=n=>n.quick?'The other player':'Your friend';
+function hostNet(code){
+  return{role:'host',on:false,code,ev:[],evId:0,tick:0,ack:0,pend:new Map(),
+    gi:{x:0,y:0,d:false,dp:false},hi:{x:0,y:0,d:false,dp:false},et:0,rmGot:0,rmSeen:0,gsk:0,acc:0,lastRx:0,conn:null,peer:null};
+}
+function guestNet(){
+  return{role:'guest',on:false,seq:0,buf:new Map(),rm:0,dHeld:false,hi:{x:0,y:0,d:false,dp:false},
+    snapN:-1,evSeen:0,pending:null,acc:0,ping:0,lastRx:performance.now(),overShown:false,conn:null,peer:null};
+}
+function hostAccept(me,c){                              // host: somebody connected to our room
+  if(net!==me)return;
+  if(me.conn){c.on('open',()=>{try{c.send({t:'full'});}catch(e){}setTimeout(()=>{try{c.close();}catch(e){}},400);});return;}
+  me.conn=c;
+  const drop=why=>{
+    if(net!==me||me.conn!==c)return;
+    if(me.quick&&!me.on){me.conn=null;try{c.close();}catch(e){}return;}   // a searcher who never got through: keep waiting for the next one
+    netLost(me,why);
+  };
+  c.on('open',()=>{
+    if(net!==me||me.conn!==c)return;
+    startOnline(true);
+    if(me.quick)setTimeout(()=>{if(net===me){try{me.peer.disconnect();}catch(e){}}},2000);   // give up the waiting spot so the next pair can use it
+  });
+  c.on('data',m=>{if(net===me&&me.conn===c)hostData(m);});
+  c.on('close',()=>drop(pal(me)+' left the game.'));
+  c.on('error',()=>drop('The connection to '+pal(me).toLowerCase()+' dropped.'));
+  if(me.quick)setTimeout(()=>{if(!me.on)drop('');},8000);
 }
 function createGame(tries){
   if(!window.Peer){$('onlineMsg').textContent='Online play did not load. Check your connection and reload the page.';return;}
   initAudio();
   if(net.role)closeNet(netDrop());
   const code=makeCode();
-  const me=net={role:'host',on:false,code,ev:[],evId:0,tick:0,ack:0,pend:new Map(),
-    gi:{x:0,y:0,d:false,dp:false},hi:{x:0,y:0,d:false,dp:false},et:0,rmGot:0,rmSeen:0,gsk:0,acc:0,lastRx:0,conn:null,peer:null};
+  const me=net=hostNet(code);
   $('lobbyCode').textContent='····';$('lobbyMsg').textContent='Setting up…';$('btnCopy').textContent='Copy invite link';
   showCard('vLobby');
   let peer;
@@ -818,15 +937,7 @@ function createGame(tries){
     $('lobbyCode').textContent=code;
     $('lobbyMsg').textContent='Send this code to your friend. The match starts when they join.';
   });
-  peer.on('connection',c=>{
-    if(net!==me)return;
-    if(me.conn){c.on('open',()=>{try{c.send({t:'full'});}catch(e){}setTimeout(()=>{try{c.close();}catch(e){}},400);});return;}
-    me.conn=c;
-    c.on('open',()=>{if(net===me)startOnline(true);});
-    c.on('data',m=>{if(net===me)hostData(m);});
-    c.on('close',()=>netLost(me,'Your friend left the game.'));
-    c.on('error',()=>netLost(me,'The connection to your friend dropped.'));
-  });
+  peer.on('connection',c=>hostAccept(me,c));
   peer.on('disconnected',()=>{if(net===me&&!me.on){try{peer.reconnect();}catch(e){}}});
   peer.on('error',e=>{
     if(net!==me||me.on)return;
@@ -838,8 +949,7 @@ function joinGame(code){
   if(!window.Peer){$('onlineMsg').textContent='Online play did not load. Check your connection and reload the page.';return;}
   initAudio();
   if(net.role)closeNet(netDrop());
-  const me=net={role:'guest',on:false,seq:0,buf:new Map(),rm:0,dHeld:false,hi:{x:0,y:0,d:false,dp:false},
-    snapN:-1,evSeen:0,pending:null,acc:0,ping:0,lastRx:performance.now(),overShown:false,conn:null,peer:null};
+  const me=net=guestNet();
   $('onlineMsg').textContent='';$('joinMsg').textContent='Looking for game '+code+'…';
   showCard('vJoin');
   let peer;
@@ -859,9 +969,82 @@ function joinGame(code){
   });
   setTimeout(()=>{if(net===me&&!me.on)netLost(me,'Could not connect to that game. Ask your friend to create a new one.');},20000);
 }
+/* ---------- quick match: finding a random player ----------
+   There is no matchmaking server. Instead there are a few fixed waiting spots, which are just
+   well-known PeerJS ids. A searching player tries to take the first spot. If it is free they wait
+   there as the host. If it is taken, somebody is already waiting, so they join that player. A spot
+   is given up as soon as its match starts, so the next pair can use it. The other spots are only
+   there for when one is busy or its owner has stopped answering. */
+const QSPOTS=3,spotId=i=>PREFIX+'quick-'+i;
+const seek={on:false,t0:0,paused:false,told:false};
+function quickStart(){                                  // the player pressed Find a match
+  if(!window.Peer){$('quickMsg').textContent='Online play did not load. Check your connection and reload the page.';return;}
+  initAudio();
+  seek.on=true;seek.t0=performance.now();seek.paused=false;seek.told=false;
+  $('seekMsg').textContent='Looking for someone else who wants a match.';
+  showCard('vSeek');
+  quickFind(0);
+}
+function quickStop(msg){                                // stop searching and go back to the Quick match screen
+  seek.on=false;seek.paused=false;
+  if(net.role)closeNet(netDrop());
+  setMode(1);$('quickMsg').textContent=msg||'';
+}
+function seekTick(){                                    // after a while with nobody about, say so
+  if(seek.on&&!seek.told&&performance.now()-seek.t0>12000){
+    seek.told=true;$('seekMsg').textContent='Nobody else is looking right now. Keep waiting, or play the computer.';
+  }
+}
+function quickFind(spot,again){                         // try to wait at this spot; if someone is already there, join them
+  if(!seek.on)return;
+  if(net.role)closeNet(netDrop());
+  if(spot>=QSPOTS){                                     // every spot was busy: look again from the first one in a moment
+    const idle=net={role:'seek',on:false,quick:true,conn:null,peer:null};
+    setTimeout(()=>{if(net===idle)quickFind(0);},1200+Math.random()*1200);
+    return;
+  }
+  const me=net=Object.assign(hostNet(null),{quick:true,spot});
+  let peer;
+  try{peer=me.peer=new Peer(spotId(spot),peerOpts());}
+  catch(e){quickStop('Online play is not available in this browser.');return;}
+  peer.on('open',()=>{                                  // waiting here now; from a later spot, go back and check the first one now and then
+    if(net===me&&spot>0)setTimeout(()=>{if(net===me&&!me.on&&!me.conn)quickFind(0);},9000+Math.random()*5000);
+  });
+  peer.on('connection',c=>hostAccept(me,c));
+  peer.on('disconnected',()=>{if(net===me&&!me.on){try{peer.reconnect();}catch(e){}}});
+  peer.on('error',e=>{
+    if(net!==me||me.on)return;
+    if(e&&e.type==='unavailable-id'){quickJoin(spot,again);return;}
+    quickStop('Could not reach the matchmaking service. Try again in a moment.');
+  });
+}
+function quickJoin(spot,again){                         // somebody is waiting at this spot: connect to them as the guest
+  if(net.role)closeNet(netDrop());
+  const me=net=Object.assign(guestNet(),{quick:true,spot});
+  const next=()=>{if(net===me&&!me.on)quickFind(spot+1);};
+  let peer;
+  try{peer=me.peer=new Peer(undefined,peerOpts());}
+  catch(e){quickStop('Online play is not available in this browser.');return;}
+  peer.on('open',()=>{
+    if(net!==me)return;
+    const c=me.conn=peer.connect(spotId(spot),{serialization:'json',reliable:false});
+    c.on('open',()=>{if(net===me)me.lastRx=performance.now();});
+    c.on('data',m=>{if(net===me)guestData(m);});
+    c.on('close',()=>{if(net!==me)return;if(me.on)netLost(me,'The other player left the game.');else next();});
+    c.on('error',()=>{if(net!==me)return;if(me.on)netLost(me,'The connection to the other player dropped.');else next();});
+  });
+  peer.on('error',e=>{
+    if(net!==me||me.on)return;
+    const ty=e&&e.type;
+    if(ty==='peer-unavailable'){if(again)next();else quickFind(spot,true);}   // whoever held the spot has gone, so it should be free now
+    else if(ty==='webrtc')next();
+    else quickStop('Could not reach the matchmaking service. Try again in a moment.');
+  });
+  setTimeout(next,7000);                                // connected to nobody useful in time: try the next spot
+}
 /* host: begin (or restart) an online match */
 function startOnline(first){
-  if(first){net.on=true;HOST=true;GUEST=false;net.lastRx=performance.now();}
+  if(first){net.on=true;HOST=true;GUEST=false;net.lastRx=performance.now();seek.on=false;}
   mode=3;demo=false;score=[0,0];time=MATCH;overtime=false;otTime=0;parts=[];texts=[];
   octos.forEach(o=>{o.scale=1;o.dHeld=false;});
   setArena(0,0);octos[0].skin=mySkin();octos[1].skin=skinAt(net.gsk);
@@ -871,7 +1054,7 @@ function startOnline(first){
 }
 function hostData(m){
   if(!m||typeof m!=='object')return;
-  if(m.t==='bye'){netLost(net,'Your friend left the game.');return;}
+  if(m.t==='bye'){netLost(net,pal(net)+' left the game.');return;}
   if(m.t!=='i'||!Array.isArray(m.q))return;
   net.lastRx=performance.now();
   for(const a of m.q){
@@ -915,13 +1098,13 @@ function hostTick(){
 }
 function guestData(m){
   if(!m||typeof m!=='object')return;
-  if(m.t==='bye'){netLost(net,'Your friend left the game.');return;}
-  if(m.t==='full'){netLost(net,'That game already has two players.');return;}
+  if(m.t==='bye'){netLost(net,pal(net)+' left the game.');return;}
+  if(m.t==='full'){if(net.quick&&!net.on)quickFind(net.spot+1);else netLost(net,'That game already has two players.');return;}
   if(m.t!=='s'||!(m.n>net.snapN))return;
   net.snapN=m.n;net.pending=m;net.lastRx=performance.now();
   if(m.et)net.ping=net.ping?net.ping*.9+(performance.now()-m.et)*.1:performance.now()-m.et;
   if(!net.on){
-    net.on=true;GUEST=true;HOST=false;mode=3;demo=false;parts=[];texts=[];banner=null;
+    net.on=true;GUEST=true;HOST=false;mode=3;demo=false;parts=[];texts=[];banner=null;seek.on=false;
     octos.forEach(o=>{o.scale=1;});setArena(0,0);
     names();showCard(null);blurActive();
   }
@@ -969,7 +1152,7 @@ function guestTick(){
 }
 function netTick(dt){
   const me=net;
-  if(performance.now()-me.lastRx>8000){netLost(me,'Lost the connection to your friend.');return;}
+  if(performance.now()-me.lastRx>8000){netLost(me,'Lost the connection to '+pal(me).toLowerCase()+'.');return;}
   if(GUEST&&me.pending){applySnap(me.pending);me.pending=null;}
   me.acc=Math.min(me.acc+dt,TICK*6);
   while(me.acc>=TICK&&net===me&&me.on){me.acc-=TICK;if(HOST)hostTick();else guestTick();}
@@ -1133,6 +1316,57 @@ function drawPattern(sk,r){
   }else if(p==='glow'){
     const g=ctx.createRadialGradient(0,0,r*.1,0,0,r);g.addColorStop(0,'rgba(255,255,255,.75)');g.addColorStop(1,'rgba(255,255,255,0)');
     ctx.fillStyle=g;ctx.fillRect(-r*1.5,-r*1.5,r*3,r*3);
+  }else if(p==='bands'){
+    ctx.fillStyle=sk.p2;
+    for(const y of [-.92,-.42,.42])ctx.fillRect(-r*1.5,y*r,r*3,r*.26);
+  }else if(p==='seeds'){
+    ctx.fillStyle=sk.dark;ctx.fillRect(-r*1.5,r*.62,r*3,r);                  // the rind
+    ctx.fillStyle='#d8f5c0';ctx.fillRect(-r*1.5,r*.53,r*3,r*.1);
+    ctx.fillStyle=sk.p2;
+    [[-.6,-.6],[0,-.78],[.6,-.6],[-.84,-.05],[.84,0],[-.32,.34],[.34,.34]].forEach(d=>{ctx.beginPath();ctx.ellipse(d[0]*r,d[1]*r,r*.06,r*.1,0,0,TAU);ctx.fill();});
+  }else if(p==='frost'){
+    const g=ctx.createRadialGradient(-r*.2,-r*.3,r*.1,0,0,r*1.1);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(1,'rgba(120,190,235,.55)');
+    ctx.fillStyle=g;ctx.fillRect(-r*1.5,-r*1.5,r*3,r*3);
+    ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=r*.07;ctx.lineCap='round';ctx.beginPath();
+    for(const a of [-2.5,-1.57,-.64,.9,2.25]){                               // ice crystals growing in from the edge
+      const x=Math.cos(a)*r,y=Math.sin(a)*r,nx=-Math.cos(a),ny=-Math.sin(a),qx=-ny,qy=nx;
+      ctx.moveTo(x,y);ctx.lineTo(x+nx*r*.42,y+ny*r*.42);
+      ctx.moveTo(x+nx*r*.2,y+ny*r*.2);ctx.lineTo(x+nx*r*.34+qx*r*.14,y+ny*r*.34+qy*r*.14);
+      ctx.moveTo(x+nx*r*.2,y+ny*r*.2);ctx.lineTo(x+nx*r*.34-qx*r*.14,y+ny*r*.34-qy*r*.14);
+    }
+    ctx.stroke();
+  }else if(p==='toxic'){
+    ctx.fillStyle=sk.p2;
+    [[-.6,-.55,.2],[.5,-.68,.16],[.8,.1,.14],[-.85,.2,.13],[-.2,.7,.2],[.45,.62,.12]].forEach((d,i)=>{const w=1+.18*Math.sin(T*3+i*1.7);ctx.beginPath();ctx.arc(d[0]*r,d[1]*r,d[2]*r*w,0,TAU);ctx.fill();});
+    for(let i=0;i<4;i++){const u=(T*.5+i*.27)%1;ctx.fillStyle='rgba(240,255,200,'+(.85*(1-u)).toFixed(2)+')';ctx.beginPath();ctx.arc(Math.sin(i*2.4)*r*.6,r*(.8-u*1.6),r*.07,0,TAU);ctx.fill();}
+  }else if(p==='fire'){
+    const g=ctx.createLinearGradient(0,r,0,-r);g.addColorStop(0,'#ffe066');g.addColorStop(.45,'#ff8a1f');g.addColorStop(1,'#d9240b');
+    ctx.fillStyle=g;ctx.fillRect(-r*1.5,-r*1.5,r*3,r*3);
+    ctx.fillStyle='rgba(255,236,150,.85)';                                   // flames licking up from below
+    for(let i=0;i<5;i++){
+      const x=(i-2)*r*.45,h=r*(.75+.3*Math.sin(T*9+i*2.1)),w=r*.24;
+      ctx.beginPath();ctx.moveTo(x-w,r*1.1);ctx.quadraticCurveTo(x-w*.9,r*1.1-h*.6,x+Math.sin(T*6+i)*r*.08,r*1.1-h);ctx.quadraticCurveTo(x+w*.9,r*1.1-h*.6,x+w,r*1.1);ctx.closePath();ctx.fill();
+    }
+  }else if(p==='storm'){
+    const g=ctx.createLinearGradient(0,-r,0,r);g.addColorStop(0,'#55668f');g.addColorStop(1,'#1a2444');
+    ctx.fillStyle=g;ctx.fillRect(-r*1.5,-r*1.5,r*3,r*3);
+    const fl=Math.min(1,Math.pow(Math.max(0,Math.sin(T*3.1)),8)+Math.pow(Math.max(0,Math.sin(T*7.3+1)),16));   // the lightning flickers
+    ctx.strokeStyle='rgba(255,236,120,'+(.45+.55*fl).toFixed(2)+')';ctx.lineWidth=r*.11;ctx.lineJoin='miter';ctx.lineCap='round';
+    ctx.shadowColor='#ffe66d';ctx.shadowBlur=6+10*fl;
+    for(const sd of [-1,1]){ctx.beginPath();ctx.moveTo(sd*r*.5,-r);ctx.lineTo(sd*r*.76,-r*.64);ctx.lineTo(sd*r*.58,-r*.6);ctx.lineTo(sd*r*.88,-r*.22);ctx.stroke();}
+    ctx.beginPath();ctx.moveTo(-r*.1,r*.5);ctx.lineTo(r*.12,r*.72);ctx.lineTo(-r*.06,r*.76);ctx.lineTo(r*.1,r*1.02);ctx.stroke();ctx.shadowBlur=0;
+  }else if(p==='aurora'){
+    const g=ctx.createLinearGradient(0,-r,0,r);g.addColorStop(0,'#0a1230');g.addColorStop(1,'#1b2a63');
+    ctx.fillStyle=g;ctx.fillRect(-r*1.5,-r*1.5,r*3,r*3);
+    ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=r*.3;
+    for(let i=0;i<3;i++){                                                    // ribbons of light drifting across
+      ctx.strokeStyle='hsla('+Math.round((150+i*55+Math.sin(T*.8+i)*35+360)%360)+',95%,66%,.72)';
+      ctx.beginPath();
+      for(let k=0;k<=8;k++){const x=(k/4-1)*r*1.1,y=r*(-.72+i*.62)+Math.sin(k*.9+T*2.2+i*1.9)*r*.2;if(k)ctx.lineTo(x,y);else ctx.moveTo(x,y);}
+      ctx.stroke();
+    }
+    ctx.fillStyle='#fff';
+    for(let i=0;i<7;i++){const tw=.3+.7*Math.abs(Math.sin(T*2.4+i*1.3));ctx.beginPath();ctx.arc(Math.sin(i*9.7)*r*.8,Math.cos(i*5.1)*r*.8,r*.045*(.5+tw),0,TAU);ctx.fill();}
   }
   if(p==='gold'||p==='rainbow'){
     if(p==='gold'){const g=ctx.createLinearGradient(-r,-r,r,r);g.addColorStop(0,'rgba(255,255,255,.6)');g.addColorStop(.45,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(160,90,0,.4)');ctx.fillStyle=g;ctx.fillRect(-r*1.5,-r*1.5,r*3,r*3);}
@@ -1161,12 +1395,34 @@ function drawHat(h,r,cx,eyy){
     ctx.fillRect(cx-r*.2,eyy-r*.06,r*.4,r*.1);
     ctx.fillStyle='rgba(255,255,255,.35)';
     for(const s of [-1,1]){ctx.beginPath();ctx.ellipse(s*r*.38+cx-r*.1,eyy-r*.08,r*.09,r*.05,-.5,0,TAU);ctx.fill();}
+  }else if(h==='sailor'){
+    const y=-r*.8;ctx.fillStyle='#fff';ctx.strokeStyle='rgba(4,34,44,.35)';ctx.lineWidth=1;
+    rr(ctx,cx-r*.46,y-r*.52,r*.92,r*.5,r*.2);ctx.fill();ctx.stroke();
+    rr(ctx,cx-r*.6,y-r*.14,r*1.2,r*.2,r*.08);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#2a5caa';ctx.fillRect(cx-r*.56,y-r*.08,r*1.12,r*.08);
+  }else if(h==='pirate'){
+    ctx.fillStyle='#d8343f';ctx.beginPath();ctx.arc(0,0,r*1.03,Math.PI*1.14,Math.PI*1.86);ctx.closePath();ctx.fill();   // a bandana over the top of the head
+    ctx.beginPath();ctx.moveTo(r*.9,-r*.46);ctx.lineTo(r*1.38,-r*.62);ctx.lineTo(r*1.3,-r*.3);ctx.closePath();ctx.fill();   // and its knot
+    ctx.beginPath();ctx.moveTo(r*.9,-r*.46);ctx.lineTo(r*1.25,-r*.1);ctx.lineTo(r*1.02,-r*.06);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#fff';[[-.45,-.66],[0,-.82],[.45,-.66],[-.22,-.56],[.24,-.56]].forEach(d=>{ctx.beginPath();ctx.arc(d[0]*r,d[1]*r,r*.06,0,TAU);ctx.fill();});
+    ctx.strokeStyle='#10131f';ctx.lineWidth=r*.07;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(cx+r*.02,-r*.42);ctx.lineTo(r*.38+cx,eyy);ctx.lineTo(r*.97,eyy+r*.14);ctx.stroke();   // eye patch strap
+    ctx.fillStyle='#10131f';ctx.beginPath();ctx.arc(r*.38+cx,eyy,r*.31,0,TAU);ctx.fill();
+  }else if(h==='wizard'){
+    const y=-r*.72;ctx.fillStyle='#3d2a9c';
+    ctx.beginPath();ctx.moveTo(cx-r*.5,y);ctx.lineTo(cx+r*.5,y);ctx.lineTo(cx+r*.2,y-r*1.02);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx,y,r*.82,r*.16,0,0,TAU);ctx.fill();
+    ctx.fillStyle='#ffd75e';
+    [[-.14,-.26,.07],[.16,-.5,.055],[.1,-.78,.045]].forEach((d,i)=>{const tw=.7+.3*Math.sin(T*4+i*2);ctx.beginPath();ctx.arc(cx+d[0]*r,y+d[1]*r,d[2]*r*tw,0,TAU);ctx.fill();});
+  }else if(h==='halo'){
+    ctx.strokeStyle='#fff3a8';ctx.lineWidth=r*.11;ctx.shadowColor='#ffe98a';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.ellipse(cx,-r*1.2+Math.sin(T*3)*r*.04,r*.52,r*.14,0,0,TAU);ctx.stroke();ctx.shadowBlur=0;
   }
 }
 function drawOcto(o){
   const sk=o.skin,pat=sk&&sk.pat,r=o.r,v=Math.hypot(o.vx,o.vy),team=o.team?VIOLET:CORAL;
   let col=sk?sk.col:team,dark=sk?sk.dark:(o.team?VIOLET_D:CORAL_D);
   if(pat==='rainbow'){const hue=(T*90)%360;col='hsl('+hue+',95%,66%)';dark='hsl('+((hue+40)%360)+',80%,46%)';}
+  else if(pat==='aurora')dark='hsl('+Math.round(160+Math.sin(T*.8)*40)+',85%,58%)';
   const ink=sk&&sk.lite?'#fff1e0':'#04222c',alpha0=ctx.globalAlpha;
   if(pat==='ghost')ctx.globalAlpha=alpha0*.6;
   let tx=-o.vx,ty=130-o.vy;const tm=Math.hypot(tx,ty)||1;tx/=tm;ty/=tm;
@@ -1184,7 +1440,7 @@ function drawOcto(o){
   if(o.turboT>0){ctx.strokeStyle='rgba(255,215,94,'+(.5+.3*Math.sin(T*14))+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,r+9,0,TAU);ctx.stroke();}
   if(sk&&o.ring!==false){ctx.strokeStyle=team;ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,r+4.5,0,TAU);ctx.stroke();}   // team colour ring, so skins never hide which side you are on
   ctx.save();ctx.rotate(ang);ctx.scale(st,1/st);
-  if(pat==='glow'){ctx.shadowColor='#7ff9ff';ctx.shadowBlur=20;}
+  if(sk&&sk.glow){ctx.shadowColor=sk.glow;ctx.shadowBlur=20;}
   ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,r,0,TAU);ctx.fill();ctx.shadowBlur=0;
   if(pat&&pat!=='ghost'){
     ctx.save();ctx.clip();ctx.scale(1/st,st);ctx.rotate(-ang);drawPattern(sk,r);ctx.restore();
@@ -1269,7 +1525,12 @@ addEventListener('keydown',e=>{
 });
 addEventListener('keyup',e=>{keys[e.code]=false;});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;clearLatch();});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    pause();
+    if(seek.on&&!net.on){if(net.role)closeNet(netDrop());seek.paused=true;}   // a hidden tab cannot play, so do not wait where somebody could be matched with it
+  }else if(seek.on&&seek.paused){seek.paused=false;quickFind(0);}
+});
 
 const stick=$('stick'),knob=$('knob');let stickOn=false;
 function stickMove(e){
@@ -1287,10 +1548,33 @@ tDash.addEventListener('pointerdown',e=>{e.preventDefault();touch.dash=true;tDas
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>tDash.addEventListener(ev,()=>{touch.dash=false;tDash.classList.remove('on');}));
 [stick,tDash].forEach(el=>el.addEventListener('contextmenu',e=>e.preventDefault()));
 
-function press(group,attr,val){document.querySelectorAll(group+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[attr]===String(val))));}
+/* A phone held sideways gets the pool full screen. The layout itself is CSS (see the end of the style sheet).
+   Where the browser allows it (Android), the first tap also hides the browser's own bars; iPhones do not allow that. */
+const wide=window.matchMedia?matchMedia('(pointer:coarse) and (orientation:landscape) and (max-height:560px)'):null;
+let wentFull=false,fullOff=false;
+const fullEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+function goFull(){
+  const el=document.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(!wide.matches||fullOff||!rq||fullEl())return;
+  try{const r=rq.call(el,{navigationUI:'hide'});wentFull=true;if(r&&r.catch)r.catch(()=>{wentFull=false;});}catch(e){}
+}
+if(wide){
+  const turned=()=>{                                    // the phone was turned
+    fullOff=false;
+    if(!wide.matches&&wentFull){
+      wentFull=false;
+      const ex=document.exitFullscreen||document.webkitExitFullscreen;
+      if(ex&&fullEl())try{const r=ex.call(document);if(r&&r.catch)r.catch(()=>{});}catch(e){}
+    }
+    scrollTo(0,0);fit();
+  };
+  if(wide.addEventListener)wide.addEventListener('change',turned);else if(wide.addListener)wide.addListener(turned);
+  addEventListener('pointerup',goFull,true);            // browsers only allow full screen straight after a tap
+  document.addEventListener('fullscreenchange',()=>{if(!fullEl()&&wentFull){wentFull=false;if(wide.matches)fullOff=true;}});   // the player left full screen themselves: do not force it back
+}
 const MODEVIEW={4:'vMenu',1:'vQuick',2:'vLocal',3:'vOnline'};
 function setMode(m){                                    // 4 chest run (main menu), 1 quick match, 2 two players, 3 online
-  mode=m;$('onlineMsg').textContent='';
+  mode=m;$('onlineMsg').textContent='';$('quickMsg').textContent='';
   updateRunBox();
   showCard(MODEVIEW[m]);
 }
@@ -1303,7 +1587,8 @@ function updateRunBox(){
   $('oppWhere').textContent=MAPS[o.map].name+', '+BALLS[o.ball].name.toLowerCase();
   $('oppChest').textContent='Win a '+CHESTS[o.chest].name;$('oppChest').className='rar'+o.chest;
   $('oppPrev').disabled=run.opp<=0;$('oppNext').disabled=run.opp>=save.unlocked-1;
-  $('btnSkins').textContent='Skins '+save.owned.length+' of '+SKINS.length;
+  $('btnSkins').textContent='Skins '+save.owned.length+'/'+SKINS.length;
+  const nch=chestCount();$('btnChests').textContent=nch?'Chests '+nch:'Chests';$('btnChests').classList.toggle('has',nch>0);
   const fc=$('oppFace').getContext('2d');fc.setTransform(2,0,0,2,0,0);fc.clearRect(0,0,52,52);
   withCtx(fc,()=>drawOcto({team:1,x:26,y:23,vx:0,vy:0,r:14,dashT:0,stunT:0,turboT:0,charges:null,skin:o.skin,ring:false,look:[0,0]}));
   if(demo&&!net.role){if(mode===4)setArena(o.map,o.ball);else setArena(0,0);kickoff();}   // the demo behind the menu previews the pool and ball
@@ -1316,10 +1601,10 @@ function withCtx(c,fn){const old=ctx;ctx=c;try{fn();}finally{ctx=old;}}   // let
 function tileDraw(cvs,skin,owned){
   const c=cvs.getContext('2d');c.setTransform(2,0,0,2,0,0);c.clearRect(0,0,46,46);
   if(!owned){
-    c.fillStyle='rgba(234,252,255,.12)';c.beginPath();c.arc(23,23,14,0,TAU);c.fill();
-    c.fillStyle=RARCOL[skin.rar];c.font='400 18px '+FAM;c.textAlign='center';c.textBaseline='middle';c.fillText('?',23,24);return;
+    c.fillStyle='rgba(234,252,255,.12)';c.beginPath();c.arc(23,23,15,0,TAU);c.fill();
+    c.fillStyle=RARCOL[skin.rar];c.font='400 20px '+FAM;c.textAlign='center';c.textBaseline='middle';c.fillText('?',23,24);return;
   }
-  withCtx(c,()=>drawOcto({team:0,x:23,y:19,vx:0,vy:0,r:12,dashT:0,stunT:0,turboT:0,charges:null,skin,ring:false,look:[0,0]}));
+  withCtx(c,()=>drawOcto({team:0,x:23,y:23,vx:0,vy:0,r:11.5,dashT:0,stunT:0,turboT:0,charges:null,skin,ring:false,look:[0,0]}));
 }
 function statText(sk){                                   // "+8% speed, +5% strength"
   const st=sk.st||{},parts=Object.keys(STAT_NAMES).filter(k=>st[k]).map(k=>'+'+Math.round((st[k]-1)*100)+'% '+STAT_NAMES[k]);
@@ -1352,81 +1637,171 @@ function buildSkins(){
 function buildOdds(){
   const t=$('oddsTable');t.textContent='';
   const head=t.insertRow();
-  ['Chest','Com','Rare','Epic','Leg','Myth'].forEach((h,i)=>{const th=document.createElement('th');th.textContent=h;if(i)th.className='rar'+(i-1);head.appendChild(th);});
-  CHESTS.forEach(ch=>{const r=t.insertRow();r.insertCell().textContent=ch.name.replace(' chest','');ch.odds.forEach(o=>{r.insertCell().textContent=o+'%';});});
+  ['Chest','Empty','Com','Rare','Epic','Leg','Myth'].forEach((h,i)=>{const th=document.createElement('th');th.textContent=h;if(i>1)th.className='rar'+(i-2);head.appendChild(th);});
+  CHESTS.forEach(ch=>{const r=t.insertRow();r.insertCell().textContent=ch.name.replace(' chest','');[ch.empty].concat(ch.odds).forEach(o=>{r.insertCell().textContent=o;});});
 }
 function showOdds(on){
   $('oddsTable').hidden=!on;$('skinGrid').hidden=on;$('btnOdds').textContent=on?'Show skins':'Chest odds';
-  if(on){$('skinInfo').textContent='Chance of each rarity in each chest. A duplicate gives nothing.';}else skinInfo(SKINS[skinIdx()],true);
+  if(on){$('skinInfo').textContent='Percent chance of what each chest holds. An empty chest or a duplicate skin gives nothing.';}else skinInfo(SKINS[skinIdx()],true);
 }
 $('btnSkins').addEventListener('click',()=>{buildSkins();buildOdds();showOdds(false);showCard('vSkins');});
 $('btnSkinsBack').addEventListener('click',()=>{updateRunBox();showCard('vMenu');});
 $('btnOdds').addEventListener('click',()=>showOdds($('oddsTable').hidden));
 
-/* ---------- winning and opening a chest ---------- */
-const chest={t:0,phase:0,open:0,tier:0,skin:SKINS[0],isNew:false};
+/* ---------- chests: winning, keeping and opening ----------
+   A chest you win goes into save.inv and stays there until you open it. What is inside is decided
+   only at the moment it opens. chest.from says which screen the chest was opened from:
+   'run' (just beat a ladder opponent), 'over' (found after a quick match) or 'inv' (the Chests screen). */
+const SHAKE=1.15;                                       // seconds a chest rattles before it opens
+const chest={t:0,phase:0,open:0,tier:0,skin:null,isNew:false,from:'inv',unlocked:false};   // phase 0 closed, 1 rattling, 2 open
 const chestC=$('chestCv').getContext('2d');
-function awardChest(){
-  const opp=LADDER[run.opp],skin=rollChest(opp.chest),isNew=!save.owned.includes(skin.id);
+const chestCount=()=>save.inv.reduce((a,b)=>a+b,0);
+function chestButtons(){                                // which buttons the chest screen shows right now
+  const done=chest.phase===2,busy=chest.phase===1,f=chest.from,left=save.inv[chest.tier]>0;
+  const more=run.opp<save.unlocked-1&&run.opp<LADDER.length-1;
+  $('btnOpen').hidden=busy||!left||(done&&f!=='inv');$('btnOpen').textContent=done?'Open another':'Open chest';
+  $('btnNextOpp').hidden=busy||f!=='run';$('btnNextOpp').textContent=more?'Next: '+LADDER[run.opp+1].name:'Play again';
+  $('btnNextOpp').classList.toggle('go',done);
+  $('btnEquip').hidden=!(done&&chest.skin&&chest.isNew);
+  $('btnChestMenu').hidden=busy;$('btnChestMenu').textContent=f==='run'?'Menu':'Back';
+}
+function showChest(tier,from,title,msg){                // put one closed chest on the chest screen
+  chest.tier=tier;chest.from=from;chest.t=0;chest.phase=0;chest.open=0;chest.skin=null;chest.isNew=false;
+  $('chestTitle').textContent=title;$('chestMsg').textContent=msg;
+  chestButtons();showCard('vChest');
+}
+function awardChest(){                                  // beat a ladder opponent: their chest goes into your chests, ready to open
+  const opp=LADDER[run.opp];
   chest.unlocked=run.opp===save.unlocked-1&&save.unlocked<LADDER.length;if(chest.unlocked)save.unlocked++;
-  if(isNew)save.owned.push(skin.id);else save.dupes++;
-  save.chests++;store();
-  chest.t=0;chest.phase=0;chest.open=0;chest.tier=opp.chest;chest.skin=skin;chest.isNew=isNew;
-  $('chestTitle').textContent='You beat '+opp.name+'!';
-  $('chestMsg').textContent=score[0]+' \u2013 '+score[1]+'. You won a '+CHESTS[opp.chest].name+'.';
-  $('btnOpen').hidden=false;$('btnEquip').hidden=true;$('btnNextOpp').hidden=true;$('btnChestMenu').hidden=true;
-  showCard('vChest');
+  save.inv[opp.chest]++;store();
+  showChest(opp.chest,'run','You beat '+opp.name+'!',score[0]+' \u2013 '+score[1]+'. You won a '+CHESTS[opp.chest].name+'. Open it now or keep it for later.');
   tone(523,.2,'triangle',.07);setTimeout(()=>tone(659,.2,'triangle',.07),180);setTimeout(()=>tone(784,.4,'triangle',.07),360);
 }
-function revealChest(){
-  const sk=chest.skin,p=$('chestMsg');p.textContent=chest.isNew?'New skin: ':'Duplicate: ';
-  const b=document.createElement('strong');b.className='rar'+sk.rar;b.textContent=sk.name;p.appendChild(b);
-  p.appendChild(document.createTextNode(', '+RAR[sk.rar]+(chest.isNew?'. '+statText(sk)+'.':'. You already have it, so nothing new this time.')));
-  const more=run.opp<save.unlocked-1&&run.opp<LADDER.length-1;
-  $('btnNextOpp').textContent=more?'Next: '+LADDER[run.opp+1].name:'Play again';$('btnNextOpp').hidden=false;
-  $('btnEquip').hidden=!chest.isNew;$('btnEquip').disabled=false;$('btnEquip').textContent='Equip';
-  $('btnChestMenu').hidden=false;
-  const base=[392,440,523,659,880][sk.rar];
-  if(chest.isNew){tone(base,.16,'triangle',.08);setTimeout(()=>tone(base*1.26,.16,'triangle',.08),130);setTimeout(()=>tone(base*1.5,.4,'triangle',.08),260);}
-  else tone(180,.3,'sine',.07,-70);
+function shakeChest(){                                  // start opening: the chest rattles, then drawChest calls revealChest
+  if(chest.phase===1||save.inv[chest.tier]<1)return;
+  chest.phase=1;chest.t=0;chest.open=0;chest.skin=null;chest.isNew=false;
+  $('chestMsg').textContent='\u2026';chestButtons();
+  tone(110,SHAKE,'sawtooth',.03,170);
 }
-$('btnOpen').addEventListener('click',()=>{if(chest.phase===0){chest.phase=1;chest.t=0;$('btnOpen').hidden=true;tone(110,.7,'sawtooth',.03,160);}});
-$('btnEquip').addEventListener('click',e=>{save.skin=chest.skin.id;store();e.currentTarget.textContent='Equipped';e.currentTarget.disabled=true;});
+function revealChest(){                                 // the lid comes up: only now is the chest used up and its contents decided
+  const tier=chest.tier,p=$('chestMsg');
+  if(save.inv[tier]<1){chest.phase=0;chestButtons();return;}
+  const sk=rollChest(tier),isNew=!!sk&&!save.owned.includes(sk.id);
+  save.inv[tier]--;save.chests++;
+  if(sk){if(isNew)save.owned.push(sk.id);else save.dupes++;}
+  store();
+  chest.skin=sk;chest.isNew=isNew;chest.phase=2;chest.t=0;chest.open=0;
+  if(!sk){
+    p.textContent='Empty! There was nothing in this one.';
+    tone(220,.22,'sine',.07,-60);setTimeout(()=>tone(150,.4,'sine',.07,-50),200);
+  }else{
+    p.textContent=isNew?'New skin: ':'Duplicate: ';
+    const b=document.createElement('strong');b.className='rar'+sk.rar;b.textContent=sk.name;p.appendChild(b);
+    p.appendChild(document.createTextNode(', '+RAR[sk.rar]+(isNew?'. '+statText(sk)+'.':'. You already have it, so nothing new this time.')));
+    const base=[392,440,523,659,880][sk.rar];
+    if(isNew){tone(base,.16,'triangle',.08);setTimeout(()=>tone(base*1.26,.16,'triangle',.08),130);setTimeout(()=>tone(base*1.5,.4,'triangle',.08),260);}
+    else tone(180,.3,'sine',.07,-70);
+  }
+  $('btnEquip').disabled=false;$('btnEquip').textContent='Equip';
+  chestButtons();
+}
+function openChests(){                                  // the Chests screen: every type, how many you hold, and a button to open one
+  const g=$('chestList');g.textContent='';
+  CHESTS.forEach((ch,i)=>{
+    const n=save.inv[i],c=document.createElement('canvas'),sp=document.createElement('span'),sm=document.createElement('small'),b=document.createElement('button');
+    c.width=92;c.height=68;c.setAttribute('aria-hidden','true');
+    sp.textContent=ch.name;sp.className='rar'+i;sm.textContent=n?'You have '+n:'None yet';sp.appendChild(sm);
+    b.type='button';b.textContent='Open';b.disabled=!n;b.setAttribute('aria-label','Open a '+ch.name);
+    b.addEventListener('click',()=>{showChest(i,'inv',ch.name,'');shakeChest();});
+    g.appendChild(c);g.appendChild(sp);g.appendChild(b);
+    const x=c.getContext('2d');x.setTransform(2,0,0,2,0,0);x.translate(23,18);x.scale(.36,.36);x.globalAlpha=n?1:.35;
+    chestLid(x,ch,0);chestBody(x,ch);
+  });
+  $('chestsInfo').textContent=chestCount()?'Open one to see what is inside. Some are empty.':'No chests yet. Win them in the Chest run, or find them by winning quick matches.';
+  showCard('vChests');
+}
+$('btnChests').addEventListener('click',openChests);
+$('btnChestsBack').addEventListener('click',()=>{updateRunBox();showCard('vMenu');});
+$('btnOpen').addEventListener('click',shakeChest);
+$('btnEquip').addEventListener('click',e=>{if(!chest.skin)return;save.skin=chest.skin.id;store();e.currentTarget.textContent='Equipped';e.currentTarget.disabled=true;});
 $('btnNextOpp').addEventListener('click',()=>{if(run.opp<save.unlocked-1&&run.opp<LADDER.length-1)run.opp++;chest.unlocked=false;startMatch();});
-$('btnChestMenu').addEventListener('click',()=>{if(chest.unlocked&&run.opp<save.unlocked-1)run.opp++;chest.unlocked=false;toMenu();});
+$('btnChestMenu').addEventListener('click',()=>{
+  if(chest.from==='run'){if(chest.unlocked&&run.opp<save.unlocked-1)run.opp++;chest.unlocked=false;toMenu();}
+  else if(chest.from==='over'){
+    if(chest.phase===2){$('overChest').hidden=true;$('btnOverChest').hidden=true;$('btnAgain').classList.add('go');}
+    showCard('vOver');
+  }else openChests();
+});
+$('btnOverChest').addEventListener('click',()=>{if(overTier>=0)showChest(overTier,'over','You found a chest','A '+CHESTS[overTier].name+'. Open it now or keep it for later.');});
 function rr(c,x,y,w,h,rad){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,rad);else c.rect(x,y,w,h);}
+/* The chest is drawn around the middle of its top edge. e runs from 0 (shut) to 1 (lid thrown back). */
+function chestLid(c,tier,e){
+  c.save();c.translate(0,-16-e*30);c.rotate(-e*.45);
+  c.fillStyle=tier.lid;rr(c,-58,-26,116,28,[14,14,3,3]);c.fill();
+  c.fillStyle=tier.band;c.fillRect(-58,-6,116,6);c.fillRect(-8,-26,16,28);
+  c.restore();
+}
+function chestBody(c,tier){
+  c.fillStyle=tier.body;rr(c,-54,-16,108,52,6);c.fill();
+  c.fillStyle=tier.band;c.fillRect(-54,-16,108,7);c.fillRect(-40,-16,9,52);c.fillRect(31,-16,9,52);
+  c.fillStyle=tier.lock;rr(c,-9,-12,18,20,4);c.fill();
+  c.fillStyle='rgba(4,34,44,.7)';c.beginPath();c.arc(0,-3,3,0,TAU);c.fill();
+}
 function drawChest(dt){
-  const c=chestC,CW=230,CH2=160,tier=CHESTS[chest.tier];
+  const c=chestC,CW=230,CH2=160,tier=CHESTS[chest.tier],amp=calm?.3:1;
   chest.t+=dt;
-  if(chest.phase===1&&chest.t>.8){chest.phase=2;chest.t=0;revealChest();}
+  if(chest.phase===1&&chest.t>SHAKE)revealChest();
   if(chest.phase===2)chest.open=Math.min(1,chest.open+dt*3);
-  const e=chest.open,shk=chest.phase===1?Math.sin(chest.t*60)*(2+chest.t*6):chest.phase===0?Math.sin(chest.t*3)*1.2:0;
+  const k=chest.phase===1?Math.min(1,chest.t/SHAKE):0;    // how far through the rattle, 0 to 1: it builds as it goes
+  let dx=0,dy=0,rot=0,e=chest.open;
+  if(chest.phase===0){dx=Math.sin(chest.t*3)*1.2;}
+  else if(chest.phase===1){
+    dx=Math.sin(chest.t*58)*(1.5+7*k)*amp;rot=Math.sin(chest.t*43)*(.03+.1*k)*amp;dy=-Math.abs(Math.sin(chest.t*10))*7*k*amp;
+    e=Math.max(0,(k-.72)/.28)*.1;                       // near the end the lid starts to lift
+  }
   c.setTransform(2,0,0,2,0,0);c.clearRect(0,0,CW,CH2);
-  c.save();c.translate(CW/2+shk,116);
-  if(e>0){                                              // light pouring out, in the colour of the skin's rarity
-    const rc=RARCOL[chest.skin.rar],g=c.createRadialGradient(0,-24,4,0,-24,112);g.addColorStop(0,rc);g.addColorStop(1,'rgba(0,0,0,0)');
+  if(chest.phase===1&&!calm){                           // little rattle marks either side
+    c.strokeStyle='rgba(234,252,255,'+(.25+.5*k).toFixed(2)+')';c.lineWidth=3;c.lineCap='round';
+    for(const sd of [-1,1])for(let i=0;i<3;i++){
+      const a=(i-1)*.5+Math.sin(chest.t*30+i)*.08,r0=78+4*Math.sin(chest.t*40+i*2),r1=r0+7+6*k;
+      c.beginPath();c.moveTo(CW/2+sd*Math.cos(a)*r0,108+Math.sin(a)*r0*.6);c.lineTo(CW/2+sd*Math.cos(a)*r1,108+Math.sin(a)*r1*.6);c.stroke();
+    }
+  }
+  c.save();c.translate(CW/2+dx,116+dy);c.rotate(rot);
+  const sk=chest.skin;
+  if(chest.phase===1&&e>0){                             // light leaking out of the gap
+    c.globalAlpha=e*6;c.fillStyle='#fff6c9';c.fillRect(-52,-18-e*30,104,4+e*30);c.globalAlpha=1;
+  }
+  if(chest.phase===2&&sk){                              // light pouring out, in the colour of the skin's rarity
+    const rc=RARCOL[sk.rar],g=c.createRadialGradient(0,-24,4,0,-24,112);g.addColorStop(0,rc);g.addColorStop(1,'rgba(0,0,0,0)');
     c.globalAlpha=.5*e;c.fillStyle=g;c.fillRect(-115,-116,230,160);
     c.globalAlpha=.3*e;c.fillStyle=rc;
     for(let i=0;i<7;i++){const a=-Math.PI/2+(i-3)*.3+Math.sin(chest.t+i)*.04;c.beginPath();c.moveTo(0,-16);c.lineTo(Math.cos(a-.06)*130,-16+Math.sin(a-.06)*130);c.lineTo(Math.cos(a+.06)*130,-16+Math.sin(a+.06)*130);c.closePath();c.fill();}
     c.globalAlpha=1;
   }
-  c.save();c.translate(0,-16-e*30);c.rotate(-e*.45);         // lid
-  c.fillStyle=tier.lid;rr(c,-58,-26,116,28,[14,14,3,3]);c.fill();
-  c.fillStyle=tier.band;c.fillRect(-58,-6,116,6);c.fillRect(-8,-26,16,28);
-  c.restore();
-  if(e>0)withCtx(c,()=>drawOcto({team:0,x:0,y:-8-e*56,vx:0,vy:0,r:4+18*e,dashT:0,stunT:0,turboT:0,charges:null,skin:chest.skin,ring:false,look:[0,0]}));
-  c.fillStyle=tier.body;rr(c,-54,-16,108,52,6);c.fill();   // body, drawn last so the skin rises out of it
-  c.fillStyle=tier.band;c.fillRect(-54,-16,108,7);c.fillRect(-40,-16,9,52);c.fillRect(31,-16,9,52);
-  c.fillStyle=tier.lock;rr(c,-9,-12,18,20,4);c.fill();
-  c.fillStyle='rgba(4,34,44,.7)';c.beginPath();c.arc(0,-3,3,0,TAU);c.fill();
+  chestLid(c,tier,e);
+  if(chest.phase===2&&e>0){
+    if(sk)withCtx(c,()=>drawOcto({team:0,x:0,y:-8-e*56,vx:0,vy:0,r:4+18*e,dashT:0,stunT:0,turboT:0,charges:null,skin:sk,ring:false,look:[0,0]}));
+    else{                                               // empty: a dark inside and a few bubbles drifting out
+      c.fillStyle='rgba(4,20,26,.85)';c.fillRect(-50,-22,100,10);
+      for(let i=0;i<5;i++){
+        const u=(chest.t*.45+i*.21)%1,x=Math.sin(i*2.3+u*4)*26*(.4+u),y=-20-u*74;
+        c.globalAlpha=(1-u)*.7*e;c.strokeStyle='#eafcff';c.lineWidth=1.5;c.beginPath();c.arc(x,y,3+((i*7)%4),0,TAU);c.stroke();
+      }
+      c.globalAlpha=1;
+    }
+  }
+  chestBody(c,tier);                                    // drawn last, so whatever is inside rises out of it
   c.restore();
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>setMode(+b.dataset.mode)));
-document.querySelectorAll('[data-diff]').forEach(b=>b.addEventListener('click',()=>{diff=+b.dataset.diff;press('#segDiff','diff',diff);}));
 $('btnStart').addEventListener('click',startMatch);
 $('btnQuickStart').addEventListener('click',startMatch);
+$('btnFind').addEventListener('click',quickStart);
+$('btnSeekCancel').addEventListener('click',()=>quickStop(''));
+$('btnSeekCpu').addEventListener('click',()=>{seek.on=false;if(net.role)closeNet(netDrop());mode=1;startMatch();});
 $('btnLocalStart').addEventListener('click',startMatch);
-$('btnHow').addEventListener('click',()=>{const d=$('how');d.open=true;d.scrollIntoView({behavior:calm?'auto':'smooth',block:'start'});});
+$('btnHow').addEventListener('click',()=>{if(wide&&wide.matches){location.href='guide.html';return;}const d=$('how');d.open=true;d.scrollIntoView({behavior:calm?'auto':'smooth',block:'start'});});
 setTimeout(()=>$('card').classList.remove('intro'),1100);   // the entrance plays once, on first load
 $('btnCreate').addEventListener('click',()=>createGame(0));
 $('code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);});
@@ -1444,7 +1819,7 @@ $('btnCopy').addEventListener('click',e=>{
 function backToOnline(){leave();toMenu();setMode(3);}
 $('btnCancelHost').addEventListener('click',backToOnline);
 $('btnCancelJoin').addEventListener('click',backToOnline);
-$('btnLostMenu').addEventListener('click',()=>{toMenu();setMode(3);});
+$('btnLostMenu').addEventListener('click',()=>{toMenu();setMode(lostQuick?1:3);});
 $('btnAgain').addEventListener('click',()=>{
   if(GUEST){net.rm++;$('overTitle').textContent='Rematch…';}
   else if(HOST)startOnline(false);
@@ -1469,13 +1844,15 @@ function readInvite(){
 readInvite();addEventListener('hashchange',readInvite);
 
 // small hook for testing in the browser console
-window.__pp=()=>({stats:octos.map(o=>({spd:stat(o,'spd'),str:stat(o,'str'),rg:stat(o,'rg'),bt:stat(o,'bt')})),state,score:score.slice(),time,demo,mode,map:MAP.name,ballType:BALL.id,skins:octos.map(o=>o.skin?(o.skin.id||'opponent'):null),opp:run.opp,save:JSON.parse(JSON.stringify(save)),role:net.role,on:net.on,ping:net.ping||0,
+window.__pp=()=>({view:VIEWS.find(v=>!$(v).hidden)||null,quick:!!net.quick,spot:net.spot==null?null:net.spot,seeking:seek.on,
+  chest:{phase:chest.phase,tier:chest.tier,from:chest.from,skin:chest.skin?chest.skin.id:null},stats:octos.map(o=>({spd:stat(o,'spd'),str:stat(o,'str'),rg:stat(o,'rg'),bt:stat(o,'bt')})),state,score:score.slice(),time,demo,mode,map:MAP.name,ballType:BALL.id,skins:octos.map(o=>o.skin?(o.skin.id||'opponent'):null),opp:run.opp,save:JSON.parse(JSON.stringify(save)),role:net.role,on:net.on,ping:net.ping||0,
   ball:[ball.x,ball.y],octos:octos.map(o=>[o.x,o.y,o.charges]),code:net.code||null,corr:objs.map(o=>Math.round(Math.hypot(o.ex,o.ey)*10)/10)});
 
 let last=0;
 function frame(t){
   const dt=Math.min(.05,(t-last)/1000||0);last=t;
   tick(dt);draw();
+  if(!$('vSeek').hidden)seekTick();
   if(!$('vChest').hidden)drawChest(dt);
   else if(!$('vSkins').hidden&&!$('skinGrid').hidden)$('skinGrid').querySelectorAll('button').forEach(b=>b._draw&&b._draw());   // keeps animated skins moving
   requestAnimationFrame(frame);
