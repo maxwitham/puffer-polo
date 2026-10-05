@@ -1619,7 +1619,7 @@ function skinInfo(sk,own){
 }
 function buildSkins(){
   const g=$('skinGrid');g.textContent='';
-  SKINS.forEach(sk=>{
+  SKINS.slice().sort((a,b)=>a.rar-b.rar).forEach(sk=>{      // shown from Common up to Mythic; SKINS itself keeps its order, which online play relies on
     const own=save.owned.includes(sk.id),b=document.createElement('button'),c=document.createElement('canvas');
     c.width=c.height=92;b.type='button';b.appendChild(c);
     b.setAttribute('aria-label',own?sk.name+', '+RAR[sk.rar]:'Locked '+RAR[sk.rar]+' skin');
